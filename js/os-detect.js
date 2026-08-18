@@ -44,7 +44,7 @@ window.OsDetect = (function () {
    */
   function installerFor(platform) {
     if (platform === 'Windows') {
-      return 'https://github.com/flickfpz/appleinstaller/releases/latest/download/AppInstaller-Setup.exe';
+      return 'https://github.com/flickfpz/appleinstaller/releases';
     }
     return 'install.sh';
   }

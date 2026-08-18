@@ -4,15 +4,11 @@
 ; Creates a proper Windows .exe installer with a wizard UI:
 ;   Welcome → License → Choose Dir → Install → Finish
 ;
-; Prerequisites:
-;   - NSIS (https://nsis.sourceforge.io) installed
-;   - Rigset built (build\Rigset.exe exists)
-;
 ; Compile:
 ;   makensis installer.nsi
 ;
 ; Output:
-;   rigset.exe (standalone installer)
+;   rigset.exe (standalone installer with binary embedded)
 ; ─────────────────────────────────────────────────────────────────────────────
 
 !include "MUI2.nsh"
@@ -62,57 +58,8 @@ Section "Rigset (required)" SecMain
 
   SetOutPath "$INSTDIR"
 
-  ; ── Check for pre-built binary ─────────────────────────────────────────────
-  ; Try multiple locations where the built binary might be
-
-  IfFileExists "build\Release\Rigset.exe" 0 +3
-    CopyFiles "build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "build\Rigset.exe" 0 +3
-    CopyFiles "build\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "..\build\Release\Rigset.exe" 0 +3
-    CopyFiles "..\build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "..\build\Rigset.exe" 0 +3
-    CopyFiles "..\build\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  ; Binary not found — show error
-  MessageBox MB_ICONSTOP "Built binary not found.$\n$\nPlease build the project first (run install.bat or build with CMake),$\nthen run this installer from the project directory."
-  Abort
-
-  binary_done:
-
-  ; ── Deploy Qt DLLs via windeployqt ─────────────────────────────────────────
-  DetailPrint "Deploying Qt runtime DLLs..."
-  nsExec::ExecToLog '"$INSTDIR\Rigset.exe" --version'
-  ; Try windeployqt from common Qt locations
-  var /GLOBAL WINDEPLOY
-  StrCpy $WINDEPLOY ""
-
-  IfFileExists "C:\Qt\6.7\msvc2022_64\bin\windeployqt.exe" 0 +3
-    StrCpy $WINDEPLOY "C:\Qt\6.7\msvc2022_64\bin\windeployqt.exe"
-    Goto deploy_qt
-
-  IfFileExists "C:\Qt\6.6\msvc2022_64\bin\windeployqt.exe" 0 +3
-    StrCpy $WINDEPLOY "C:\Qt\6.6\msvc2022_64\bin\windeployqt.exe"
-    Goto deploy_qt
-
-  IfFileExists "C:\Qt\6.5\msvc2022_64\bin\windeployqt.exe" 0 +3
-    StrCpy $WINDEPLOY "C:\Qt\6.5\msvc2022_64\bin\windeployqt.exe"
-    Goto deploy_qt
-
-  Goto skip_deploy
-
-  deploy_qt:
-    DetailPrint "Running windeployqt..."
-    nsExec::ExecToLog '"$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$INSTDIR\Rigset.exe"'
-
-  skip_deploy:
+  ; Extract the bundled binary (embedded at compile time)
+  File "Rigset.exe"
 
   ; ── Copy install scripts ──────────────────────────────────────────────────
   SetOutPath "$INSTDIR"

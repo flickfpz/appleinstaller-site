@@ -30,7 +30,7 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 void UpdateChecker::check()
 {
-    QNetworkRequest req(QUrl(VERSION_URL));
+    QNetworkRequest req{QUrl(VERSION_URL)};
     req.setTransferTimeout(5000);
     m_nam.get(req);
 }

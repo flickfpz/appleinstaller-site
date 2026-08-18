@@ -8,17 +8,15 @@
  */
 window.OsDetect = (function () {
 
-  var PLATFORMS = ['Windows', 'macOS', 'Arch Linux', 'Debian/Ubuntu', 'Fedora', 'CachyOS'];
+  var PLATFORMS = ['Windows', 'macOS', 'Linux'];
 
   var IA_BASE = 'https://flickfpz.github.io/appleinstaller-site';
+  var LINUX_CMD = 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz';
 
   var INSTALLERS = {
-    'Windows':        { type: 'download', url: IA_BASE + '/rigset.exe' },
+    'Windows':        { type: 'download', url: 'https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset.exe' },
     'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-macos-arm64.tar.gz | tar -xz' },
-    'Arch Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Debian/Ubuntu':  { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz' },
-    'CachyOS':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz' }
+    'Linux':          { type: 'curl',     command: LINUX_CMD }
   };
 
   function detect(ua) {
@@ -27,14 +25,11 @@ window.OsDetect = (function () {
     }
     if (/Windows/i.test(ua))              return 'Windows';
     if (/Mac OS X|macOS/i.test(ua))       return 'macOS';
-    if (/Fedora|CentOS|RHEL/i.test(ua))   return 'Fedora';
-    if (/CachyOS/i.test(ua))              return 'CachyOS';
-    if (/Arch|Manjaro/i.test(ua))         return 'Arch Linux';
-    return 'Debian/Ubuntu';
+    return 'Linux';
   }
 
   function installerFor(platform) {
-    return INSTALLERS[platform];
+    return INSTALLERS[platform] || INSTALLERS['Linux'];
   }
 
   return { detect: detect, installerFor: installerFor, PLATFORMS: PLATFORMS };

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version string (e.g. 1.0.0). Leave empty to use tag.'
+        description: 'Version string (e.g. 1.0.1). Leave empty to use tag.'
         required: false
         default: ''
 
@@ -20,11 +20,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: Rigset-linux-x86_64.tar.gz
+            artifact: rigset-linux-x86_64.tar.gz
           - os: windows-latest
-            artifact: Rigset-Setup.exe
+            artifact: rigset.exe
           - os: macos-latest
-            artifact: Rigset-macos-arm64.tar.gz
+            artifact: rigset-macos-arm64.tar.gz
 
     runs-on: ${{ matrix.os }}
 
@@ -91,14 +91,14 @@ jobs:
             cp "$BINARY" Rigset.exe
           fi
           export PATH="/c/Program Files (x86)/NSIS:$PATH"
-          cd app && makensis installer.nsi && cd .. && mv app/Rigset-Setup.exe .
+          cd app && makensis installer.nsi && cd .. && mv app/rigset.exe .
 
       - name: Upload Windows installer
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: Rigset-Setup.exe
+          path: rigset.exe
 
       # ── Package (Linux) ────────────────────────────────────────────────────
       - name: Package Linux binary
@@ -110,15 +110,15 @@ jobs:
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
           chmod +x "$BINARY"
-          cp "$BINARY" Rigset
-          tar -czf Rigset-linux-x86_64.tar.gz Rigset
+          cp "$BINARY" rigset
+          tar -czf rigset-linux-x86_64.tar.gz rigset
 
       - name: Upload Linux artifact
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: linux-binary
-          path: Rigset-linux-x86_64.tar.gz
+          path: rigset-linux-x86_64.tar.gz
 
       # ── Package (macOS) ────────────────────────────────────────────────────
       - name: Package macOS binary
@@ -130,10 +130,10 @@ jobs:
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
           if [ -d "$BINARY" ]; then
-            tar -czf Rigset-macos-arm64.tar.gz -C build "$(basename "$BINARY")"
+            tar -czf rigset-macos-arm64.tar.gz -C build "$(basename "$BINARY")"
           else
-            cp "$BINARY" Rigset
-            tar -czf Rigset-macos-arm64.tar.gz Rigset
+            cp "$BINARY" rigset
+            tar -czf rigset-macos-arm64.tar.gz rigset
           fi
 
       - name: Upload macOS artifact
@@ -141,7 +141,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-binary
-          path: Rigset-macos-arm64.tar.gz
+          path: rigset-macos-arm64.tar.gz
 
   publish:
     needs: release
@@ -158,15 +158,15 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            windows-installer/Rigset-Setup.exe
-            linux-binary/Rigset-linux-x86_64.tar.gz
-            macos-binary/Rigset-macos-arm64.tar.gz
+            windows-installer/rigset.exe
+            linux-binary/rigset-linux-x86_64.tar.gz
+            macos-binary/rigset-macos-arm64.tar.gz
 
       - name: Update site binaries + version
         run: |
-          cp windows-installer/Rigset-Setup.exe .
-          cp linux-binary/Rigset-linux-x86_64.tar.gz .
-          cp macos-binary/Rigset-macos-arm64.tar.gz .
+          cp windows-installer/rigset.exe .
+          cp linux-binary/rigset-linux-x86_64.tar.gz .
+          cp macos-binary/rigset-macos-arm64.tar.gz .
 
           TAG="${GITHUB_REF_NAME#v}"
           VERSION="${{ github.event.inputs.version }}"
@@ -184,6 +184,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Rigset-Setup.exe Rigset-linux-x86_64.tar.gz Rigset-macos-arm64.tar.gz version.json
+          git add rigset.exe rigset-linux-x86_64.tar.gz rigset-macos-arm64.tar.gz version.json
           git commit -m "Update binaries to ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}"
           git push origin HEAD:main

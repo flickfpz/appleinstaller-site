@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Quick Installer — one-command install for App Installer
+# Quick Installer — one-command install for Rigset
 #
 # Usage (Linux / macOS):
-#   curl -fsSL https://raw.githubusercontent.com/appleinstaller/app-installer/main/quick-install.sh | bash
+#   curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
 #
 # What it does:
-#   1. Clones the App Installer repo (or pulls if already cloned)
+#   1. Clones the Rigset repo (or pulls if already cloned)
 #   2. Runs the full install.sh script
 #   3. Cleans up the clone afterwards (optional)
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -euo pipefail
 
-REPO_URL="https://github.com/appleinstaller/app-installer.git"
-CLONE_DIR="${HOME}/.appinstaller-build"
+REPO_URL="https://github.com/flickfpz/appleinstaller.git"
+CLONE_DIR="${HOME}/.rigset-build"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
@@ -26,7 +26,7 @@ die()     { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*" >&2; exit 1; }
 
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════════╗"
-echo "  ║   App Installer — Quick One-Command Install  ║"
+echo "  ║   Rigset — Quick One-Command Install         ║"
 echo "  ╚══════════════════════════════════════════════╝"
 echo -e "${RESET}"
 
@@ -44,7 +44,7 @@ if [[ -d "$CLONE_DIR/.git" ]]; then
         git clone --quiet "$REPO_URL" "$CLONE_DIR"
     }
 else
-    info "Cloning App Installer to $CLONE_DIR..."
+    info "Cloning Rigset to $CLONE_DIR..."
     rm -rf "$CLONE_DIR"
     git clone --quiet "$REPO_URL" "$CLONE_DIR"
 fi

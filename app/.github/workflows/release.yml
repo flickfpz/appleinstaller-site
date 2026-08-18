@@ -14,11 +14,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: AppleInstaller-linux-x86_64.tar.gz
+            artifact: Rigset-linux-x86_64.tar.gz
           - os: windows-latest
-            artifact: AppInstaller-Setup.exe
+            artifact: Rigset-Setup.exe
           - os: macos-latest
-            artifact: AppleInstaller-macos-arm64.tar.gz
+            artifact: Rigset-macos-arm64.tar.gz
 
     runs-on: ${{ matrix.os }}
 
@@ -75,14 +75,14 @@ jobs:
         run: |
           WINDEPLOY="C:/Qt/6.8.2/msvc2022_64/bin/windeployqt.exe"
           BINARY=""
-          for b in build/Release/AppleInstaller.exe build/AppleInstaller.exe build/Release/AppInstaller.exe build/AppInstaller.exe; do
+          for b in build/Release/Rigset.exe build/Rigset.exe build/Release/AppleInstaller.exe build/AppleInstaller.exe; do
             if [ -f "$b" ]; then BINARY="$b"; break; fi
           done
           if [ -n "$BINARY" ]; then
             if [ -f "$WINDEPLOY" ]; then
               "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$BINARY"
             fi
-            cp "$BINARY" AppleInstaller.exe
+            cp "$BINARY" Rigset.exe
           fi
           export PATH="/c/Program Files (x86)/NSIS:$PATH"
           makensis installer.nsi
@@ -92,42 +92,42 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: AppInstaller-Setup.exe
+          path: Rigset-Setup.exe
 
       # ── Package (Linux) ────────────────────────────────────────────────────
       - name: Package Linux binary
         if: runner.os == 'Linux'
         run: |
           BINARY=""
-          for b in build/AppleInstaller build/AppInstaller; do
+          for b in build/Rigset build/AppleInstaller; do
             if [ -f "$b" ]; then BINARY="$b"; break; fi
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
           chmod +x "$BINARY"
-          cp "$BINARY" AppInstaller
-          tar -czf AppleInstaller-linux-x86_64.tar.gz AppInstaller
+          cp "$BINARY" Rigset
+          tar -czf Rigset-linux-x86_64.tar.gz Rigset
 
       - name: Upload Linux artifact
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: linux-binary
-          path: AppleInstaller-linux-x86_64.tar.gz
+          path: Rigset-linux-x86_64.tar.gz
 
       # ── Package (macOS) ────────────────────────────────────────────────────
       - name: Package macOS binary
         if: runner.os == 'macOS'
         run: |
           BINARY=""
-          for b in build/AppleInstaller.app build/AppleInstaller; do
+          for b in build/Rigset.app build/AppleInstaller.app build/Rigset build/AppleInstaller; do
             if [ -e "$b" ]; then BINARY="$b"; break; fi
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
           if [ -d "$BINARY" ]; then
-            tar -czf AppleInstaller-macos-arm64.tar.gz -C build "$(basename "$BINARY")"
+            tar -czf Rigset-macos-arm64.tar.gz -C build "$(basename "$BINARY")"
           else
-            cp "$BINARY" AppInstaller
-            tar -czf AppleInstaller-macos-arm64.tar.gz AppInstaller
+            cp "$BINARY" Rigset
+            tar -czf Rigset-macos-arm64.tar.gz Rigset
           fi
 
       - name: Upload macOS artifact
@@ -135,7 +135,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-binary
-          path: AppleInstaller-macos-arm64.tar.gz
+          path: Rigset-macos-arm64.tar.gz
 
   publish:
     needs: release
@@ -148,6 +148,6 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            windows-installer/AppInstaller-Setup.exe
-            linux-binary/AppleInstaller-linux-x86_64.tar.gz
-            macos-binary/AppleInstaller-macos-arm64.tar.gz
+            windows-installer/Rigset-Setup.exe
+            linux-binary/Rigset-linux-x86_64.tar.gz
+            macos-binary/Rigset-macos-arm64.tar.gz

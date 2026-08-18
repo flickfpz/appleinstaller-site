@@ -83,13 +83,13 @@ elseif(UNIX)
     )
 
     # .desktop file
-    install(FILES "${CMAKE_SOURCE_DIR}/resources/appinstaller.desktop"
+    install(FILES "${CMAKE_SOURCE_DIR}/resources/rigset.desktop"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
         OPTIONAL
     )
 
     # Icon
-    install(FILES "${CMAKE_SOURCE_DIR}/resources/icons/appinstaller.png"
+    install(FILES "${CMAKE_SOURCE_DIR}/resources/icons/rigset.png"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps"
         OPTIONAL
     )

@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# App Installer — one-line install
+# Rigset — one-line install
 #
 # Usage:
 #   curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
 #
 # What it does:
 #   1. Detects OS (Linux / macOS) and architecture
-#   2. Downloads the latest pre-built binary from GitHub Releases
+#   2. Downloads the latest pre-built binary from the site
 #   3. Installs it to /usr/local/bin (Linux) or /Applications (macOS)
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -euo pipefail
 
-REPO="flickfpz/appleinstaller-site"
 SITE_BASE="https://flickfpz.github.io/appleinstaller-site"
 INSTALL_DIR="/usr/local/bin"
-APP_NAME="appinstaller"
+APP_NAME="rigset"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 CYAN='\033[0;36m'; BOLD='\033[1m'; RESET='\033[0m'
@@ -28,7 +27,7 @@ die()     { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*" >&2; exit 1; }
 
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║     App Installer — One-Line Install     ║"
+echo "  ║       Rigset — One-Line Install          ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo -e "${RESET}"
 
@@ -55,9 +54,9 @@ info "Detected: ${BOLD}${OS}${RESET} / ${BOLD}${ARCH}${RESET}"
 
 # ── Determine download asset name ────────────────────────────────────────────
 if [[ "$OS" == "linux" ]]; then
-    ASSET="AppInstaller-linux-x86_64.tar.gz"
+    ASSET="Rigset-linux-x86_64.tar.gz"
 elif [[ "$OS" == "macos" ]]; then
-    ASSET="AppInstaller-macos-arm64.tar.gz"
+    ASSET="Rigset-macos-arm64.tar.gz"
 fi
 
 DOWNLOAD_URL="${SITE_BASE}/${ASSET}"
@@ -81,17 +80,16 @@ success "Download complete."
 info "Extracting..."
 tar -xzf "$TMP_DIR/$ASSET" -C "$TMP_DIR"
 
-# Find the binary (could be named AppleInstaller or appinstaller)
+# Find the binary (could be named Rigset, rigset, or AppleInstaller)
 BINARY="$(find "$TMP_DIR" -maxdepth 1 -type f -executable | head -1)"
 if [[ -z "$BINARY" ]]; then
-    # Try without executable bit
-    BINARY="$(find "$TMP_DIR" -maxdepth 1 -type f \( -name 'AppleInstaller' -o -name 'appinstaller' -o -name 'AppleInstaller.app' \) | head -1)"
+    BINARY="$(find "$TMP_DIR" -maxdepth 1 -type f \( -name 'Rigset' -o -name 'rigset' -o -name 'Rigset.app' \) | head -1)"
 fi
 [[ -n "$BINARY" ]] || die "Could not find the binary in the archive."
 
 # ── Install ───────────────────────────────────────────────────────────────────
 if [[ "$OS" == "macos" ]]; then
-    DEST="/Applications/AppInstaller.app"
+    DEST="/Applications/Rigset.app"
     if [[ -d "$BINARY" ]]; then
         info "Installing app bundle to $DEST..."
         rm -rf "$DEST"
@@ -110,15 +108,15 @@ else
     DESKTOP_DIR="/usr/share/applications"
     info "Creating .desktop entry..."
     sudo mkdir -p "$DESKTOP_DIR"
-    sudo tee "$DESKTOP_DIR/appinstaller.desktop" > /dev/null <<DESKTOP
+    sudo tee "$DESKTOP_DIR/rigset.desktop" > /dev/null <<DESKTOP
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=App Installer
+Name=Rigset
 GenericName=Software Installer
 Comment=Install your favourite apps in one click
-Exec=appinstaller
-Icon=appinstaller
+Exec=rigset
+Icon=rigset
 Categories=System;PackageManager;
 Keywords=install;apps;software;
 StartupNotify=true
@@ -129,7 +127,7 @@ fi
 
 echo ""
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${RESET}"
-echo -e "${GREEN}${BOLD}  App Installer installed successfully!${RESET}"
-echo -e "${GREEN}${BOLD}  Run: appinstaller${RESET}"
+echo -e "${GREEN}${BOLD}  Rigset installed successfully!${RESET}"
+echo -e "${GREEN}${BOLD}  Run: rigset${RESET}"
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${RESET}"
 echo ""

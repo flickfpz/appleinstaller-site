@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ─────────────────────────────────────────────────────────────────────────────
-:: AppInstaller — self-installer for Windows
+:: Rigset — self-installer for Windows
 ::
 :: Requirements: winget (Windows Package Manager) — ships with Windows 11
 ::               and Windows 10 (1809+) via Microsoft Store / App Installer.
@@ -9,11 +9,11 @@ setlocal EnableDelayedExpansion
 :: Run as a normal user (winget will request elevation when needed).
 :: ─────────────────────────────────────────────────────────────────────────────
 
-title App Installer — Self Installer
+title Rigset — Self Installer
 
 echo.
 echo  ╔══════════════════════════════════════════╗
-echo  ║       App Installer — Self Installer     ║
+echo  ║       Rigset — Self Installer            ║
 echo  ╚══════════════════════════════════════════╝
 echo.
 
@@ -34,8 +34,8 @@ echo [ OK ]  winget found.
 
 :: ── Check for pre-built binary alongside the script ──────────────────────────
 set "SCRIPT_DIR=%~dp0"
-set "PREBUILT=%SCRIPT_DIR%build\Release\AppleInstaller.exe"
-if not exist "%PREBUILT%" set "PREBUILT=%SCRIPT_DIR%build\AppleInstaller.exe"
+set "PREBUILT=%SCRIPT_DIR%build\Release\Rigset.exe"
+if not exist "%PREBUILT%" set "PREBUILT=%SCRIPT_DIR%build\Rigset.exe"
 
 if exist "%PREBUILT%" (
     echo [ OK ]  Pre-built binary found: %PREBUILT%
@@ -102,7 +102,7 @@ set "BUILD_DIR=%SRC_DIR%build"
 
 if not exist "%SRC_DIR%CMakeLists.txt" (
     echo [FAIL]  CMakeLists.txt not found in %SRC_DIR%
-    echo         Run this script from the AppleInstaller source directory.
+    echo         Run this script from the Rigset source directory.
     pause
     exit /b 1
 )
@@ -128,8 +128,8 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-set "PREBUILT=%BUILD_DIR%\Release\AppleInstaller.exe"
-if not exist "%PREBUILT%" set "PREBUILT=%BUILD_DIR%\AppleInstaller.exe"
+set "PREBUILT=%BUILD_DIR%\Release\Rigset.exe"
+if not exist "%PREBUILT%" set "PREBUILT=%BUILD_DIR%\Rigset.exe"
 
 if not exist "%PREBUILT%" (
     echo [FAIL]  Binary not found after build. Check build output above.
@@ -144,7 +144,7 @@ echo [INFO]  Deploying Qt runtime DLLs...
 set "DEPLOY_DIR=%SCRIPT_DIR%dist"
 if not exist "%DEPLOY_DIR%" mkdir "%DEPLOY_DIR%"
 
-copy /y "%PREBUILT%" "%DEPLOY_DIR%\AppInstaller.exe" >nul
+copy /y "%PREBUILT%" "%DEPLOY_DIR%\Rigset.exe" >nul
 
 :: Find windeployqt
 set "WINDEPLOY="
@@ -165,20 +165,20 @@ goto :install_shortcut
 :deploy
 echo [INFO]  Running windeployqt...
 "%WINDEPLOY%" --release --no-translations --no-system-d3d-compiler ^
-    --no-opengl-sw "%DEPLOY_DIR%\AppInstaller.exe"
+    --no-opengl-sw "%DEPLOY_DIR%\Rigset.exe"
 echo [ OK ]  Qt DLLs deployed.
 
 :install_shortcut
 :: ── Create Start Menu shortcut ────────────────────────────────────────────────
 echo [INFO]  Creating Start Menu shortcut...
 set "SHORTCUT_DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs"
-set "SHORTCUT=%SHORTCUT_DIR%\App Installer.lnk"
+set "SHORTCUT=%SHORTCUT_DIR%\Rigset.lnk"
 
 :: Use PowerShell to create the shortcut
 powershell -NoProfile -Command ^
     "$ws = New-Object -ComObject WScript.Shell; " ^
     "$sc = $ws.CreateShortcut('%SHORTCUT%'); " ^
-    "$sc.TargetPath = '%DEPLOY_DIR%\AppInstaller.exe'; " ^
+    "$sc.TargetPath = '%DEPLOY_DIR%\Rigset.exe'; " ^
     "$sc.WorkingDirectory = '%DEPLOY_DIR%'; " ^
     "$sc.Description = 'Install your favourite apps in one click'; " ^
     "$sc.Save()"
@@ -190,11 +190,11 @@ if %errorlevel% eq 0 (
 )
 
 :: ── Desktop shortcut (optional) ──────────────────────────────────────────────
-set "DESKTOP_SC=%USERPROFILE%\Desktop\App Installer.lnk"
+set "DESKTOP_SC=%USERPROFILE%\Desktop\Rigset.lnk"
 powershell -NoProfile -Command ^
     "$ws = New-Object -ComObject WScript.Shell; " ^
     "$sc = $ws.CreateShortcut('%DESKTOP_SC%'); " ^
-    "$sc.TargetPath = '%DEPLOY_DIR%\AppInstaller.exe'; " ^
+    "$sc.TargetPath = '%DEPLOY_DIR%\Rigset.exe'; " ^
     "$sc.WorkingDirectory = '%DEPLOY_DIR%'; " ^
     "$sc.Description = 'Install your favourite apps in one click'; " ^
     "$sc.Save()" >nul 2>&1
@@ -202,15 +202,15 @@ powershell -NoProfile -Command ^
 :: ── Done ──────────────────────────────────────────────────────────────────────
 echo.
 echo  ════════════════════════════════════════════
-echo    App Installer installed successfully!
-echo    Location: %DEPLOY_DIR%\AppInstaller.exe
-echo    Shortcut: Start Menu ^> App Installer
+echo    Rigset installed successfully!
+echo    Location: %DEPLOY_DIR%\Rigset.exe
+echo    Shortcut: Start Menu ^> Rigset
 echo  ════════════════════════════════════════════
 echo.
 
-set /p LAUNCH="Launch App Installer now? [Y/n]: "
+set /p LAUNCH="Launch Rigset now? [Y/n]: "
 if /i "!LAUNCH!" neq "n" (
-    start "" "%DEPLOY_DIR%\AppInstaller.exe"
+    start "" "%DEPLOY_DIR%\Rigset.exe"
 )
 
 endlocal

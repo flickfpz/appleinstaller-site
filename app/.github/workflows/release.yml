@@ -3,6 +3,12 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string (e.g. 1.0.0). Leave empty to use "dev".'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -140,6 +146,8 @@ jobs:
   publish:
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
 
@@ -151,3 +159,38 @@ jobs:
             windows-installer/Rigset-Setup.exe
             linux-binary/Rigset-linux-x86_64.tar.gz
             macos-binary/Rigset-macos-arm64.tar.gz
+
+      - name: Push binaries to site repo
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/flickfpz/appleinstaller-site.git /tmp/site
+
+          cp windows-installer/Rigset-Setup.exe /tmp/site/
+          cp linux-binary/Rigset-linux-x86_64.tar.gz /tmp/site/
+          cp macos-binary/Rigset-macos-arm64.tar.gz /tmp/site/
+
+          # Update version.json with the tag version
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="${{ github.event.inputs.version }}"
+          if [ -n "$VERSION" ]; then
+            TAG="$VERSION"
+          fi
+          if [ -n "$TAG" ]; then
+            python3 -c "
+          import json
+          with open('/tmp/site/version.json') as f:
+              d = json.load(f)
+          d['version'] = '$TAG'
+          with open('/tmp/site/version.json', 'w') as f:
+              json.dump(d, f, indent=2)
+          "
+          fi
+
+          cd /tmp/site
+          git add -A
+          git diff --cached --quiet || {
+            git commit -m "Update binaries to ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}"
+            git push origin main
+          }

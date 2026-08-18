@@ -68,13 +68,13 @@ jobs:
         run: |
           FOUND=0
           for f in \
+            build/Rigset \
             build/AppleInstaller \
-            build/AppInstaller \
-            build/AppleInstaller.app/Contents/MacOS/AppleInstaller \
+            build/Rigset.app/Contents/MacOS/Rigset \
+            build/Release/Rigset.exe \
             build/Release/AppleInstaller.exe \
-            build/Release/AppInstaller.exe \
-            build/AppleInstaller.exe \
-            build/AppInstaller.exe; do
+            build/Rigset.exe \
+            build/AppleInstaller.exe; do
             if [ -e "$f" ]; then echo "Found: $f"; FOUND=1; break; fi
           done
           [ "$FOUND" -eq 1 ] || { echo "Binary not found"; exit 1; }

@@ -952,7 +952,7 @@ footer {
 
 .curl-command {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.25rem;
@@ -972,6 +972,7 @@ footer {
 }
 
 .curl-copy-btn {
+  align-self: flex-start;
   padding: 0.35rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;

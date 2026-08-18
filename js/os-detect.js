@@ -13,15 +13,15 @@ window.OsDetect = (function () {
   var IA_BASE = 'https://flickfpz.github.io/appleinstaller-site';
 
   var INSTALLERS = {
-    'Windows':        { type: 'download', url: IA_BASE + '/Rigset-Setup.exe' },
-    'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-macos-arm64.tar.gz | tar -xz' },
-    'Arch Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Debian/Ubuntu':  { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'CachyOS':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Manjaro':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Linux Mint':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' },
-    'Void Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/Rigset-linux-x86_64.tar.gz | tar -xz' }
+    'Windows':        { type: 'download', url: IA_BASE + '/AppInstaller-Setup.exe' },
+    'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-macos-arm64.tar.gz | tar -xz' },
+    'Arch Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Debian/Ubuntu':  { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'CachyOS':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Manjaro':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Linux Mint':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Void Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' }
   };
 
   function detect(ua) {

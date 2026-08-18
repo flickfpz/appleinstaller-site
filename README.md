@@ -1,8 +1,6 @@
-# App Installer — Website
+# Rigset — Website
 
-Public landing page and install scripts for [App Installer](https://github.com/flickfpz/appleinstaller).
-
-**The application source code is in a [private repository](https://github.com/flickfpz/appleinstaller).**
+Public landing page, admin panel, and install scripts for [Rigset](https://github.com/flickfpz/appleinstaller-site/tree/main/app).
 
 ## Quick Install (Linux / macOS)
 
@@ -13,6 +11,8 @@ curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
 ## Website
 
 The site is live at **https://flickfpz.github.io/appleinstaller-site/**
+
+Admin panel at **https://flickfpz.github.io/appleinstaller-site/admin.html**
 
 ## License
 

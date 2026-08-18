@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# AppInstaller — self-installer for Linux & macOS
+# Rigset — self-installer for Linux & macOS
 #
 # Usage:
 #   chmod +x install.sh && ./install.sh
@@ -27,7 +27,7 @@ die()     { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*" >&2; exit 1; }
 # ── Banner ────────────────────────────────────────────────────────────────────
 echo -e "${BOLD}"
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║       App Installer — Self Installer     ║"
+echo "  ║           Rigset — Self Installer        ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo -e "${RESET}"
 
@@ -135,10 +135,10 @@ cmake --build "$BUILD_DIR" --parallel 2>&1 | grep -E "^\[|error:|warning:" || tr
 
 BINARY=""
 if [[ "$DETECTED_OS" == "macos" ]]; then
-    BINARY="$BUILD_DIR/AppleInstaller.app/Contents/MacOS/AppleInstaller"
-    [[ -f "$BINARY" ]] || BINARY="$BUILD_DIR/AppleInstaller"
+    BINARY="$BUILD_DIR/Rigset.app/Contents/MacOS/Rigset"
+    [[ -f "$BINARY" ]] || BINARY="$BUILD_DIR/Rigset"
 else
-    BINARY="$BUILD_DIR/AppleInstaller"
+    BINARY="$BUILD_DIR/Rigset"
 fi
 
 [[ -x "$BINARY" ]] || die "Build failed — binary not found at $BINARY"
@@ -152,8 +152,8 @@ ICON_DIR="/usr/share/icons/hicolor/256x256/apps"
 case "$DETECTED_OS" in
 
   macos)
-    APP_BUNDLE="$BUILD_DIR/AppleInstaller.app"
-    DEST="/Applications/AppInstaller.app"
+    APP_BUNDLE="$BUILD_DIR/Rigset.app"
+    DEST="/Applications/Rigset.app"
     if [[ -d "$APP_BUNDLE" ]]; then
         info "Installing app bundle to $DEST…"
         rm -rf "$DEST"
@@ -161,43 +161,43 @@ case "$DETECTED_OS" in
         success "Installed to $DEST"
     else
         info "Installing binary to $INSTALL_DIR…"
-        sudo cp "$BINARY" "$INSTALL_DIR/appinstaller"
-        sudo chmod 755 "$INSTALL_DIR/appinstaller"
-        success "Installed to $INSTALL_DIR/appinstaller"
+        sudo cp "$BINARY" "$INSTALL_DIR/rigset"
+        sudo chmod 755 "$INSTALL_DIR/rigset"
+        success "Installed to $INSTALL_DIR/rigset"
     fi
     ;;
 
   arch|debian|fedora)
     info "Installing binary to $INSTALL_DIR…"
-    sudo install -Dm755 "$BINARY" "$INSTALL_DIR/appinstaller"
+    sudo install -Dm755 "$BINARY" "$INSTALL_DIR/rigset"
 
     # .desktop entry
     info "Creating .desktop entry…"
     sudo mkdir -p "$DESKTOP_DIR"
-    sudo tee "$DESKTOP_DIR/appinstaller.desktop" > /dev/null <<DESKTOP
+    sudo tee "$DESKTOP_DIR/rigset.desktop" > /dev/null <<DESKTOP
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=App Installer
+Name=Rigset
 GenericName=Software Installer
 Comment=Install your favourite apps in one click
-Exec=appinstaller
-Icon=appinstaller
+Exec=rigset
+Icon=rigset
 Categories=System;PackageManager;
 Keywords=install;apps;software;
 StartupNotify=true
 DESKTOP
 
     # Install icon if it exists alongside the script
-    if [[ -f "$SCRIPT_DIR/resources/icons/appinstaller.png" ]]; then
+    if [[ -f "$SCRIPT_DIR/resources/icons/rigset.png" ]]; then
         sudo mkdir -p "$ICON_DIR"
-        sudo install -Dm644 "$SCRIPT_DIR/resources/icons/appinstaller.png" \
-            "$ICON_DIR/appinstaller.png"
+        sudo install -Dm644 "$SCRIPT_DIR/resources/icons/rigset.png" \
+            "$ICON_DIR/rigset.png"
         sudo gtk-update-icon-cache /usr/share/icons/hicolor &>/dev/null || true
     fi
 
     sudo update-desktop-database "$DESKTOP_DIR" &>/dev/null || true
-    success "Installed to $INSTALL_DIR/appinstaller"
+    success "Installed to $INSTALL_DIR/rigset"
     ;;
 
 esac
@@ -205,8 +205,8 @@ esac
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${RESET}"
-echo -e "${GREEN}${BOLD}  App Installer installed successfully!${RESET}"
-echo -e "${GREEN}${BOLD}  Run: appinstaller${RESET}"
+echo -e "${GREEN}${BOLD}  Rigset installed successfully!${RESET}"
+echo -e "${GREEN}${BOLD}  Run: rigset${RESET}"
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${RESET}"
 echo ""
 

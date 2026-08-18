@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
     QApplication app(argc, argv);
-    app.setApplicationName("App Installer");
+    app.setApplicationName("Rigset");
     app.setApplicationVersion("1.0.0");
     app.setOrganizationName("Kiro");
 
@@ -29,8 +29,12 @@ int main(int argc, char *argv[])
 
     window.show();
 
-    // Check for updates (non-blocking, fires dialog only if newer version found)
+    // Check for updates — blocking overlay if newer version found
     UpdateChecker *updater = new UpdateChecker(&app);
+    QObject::connect(updater, &UpdateChecker::updateRequired,
+                     &window, [&window](const QString &ver, const QString &url) {
+        UpdateChecker::showOverlay(&window, ver, url);
+    });
     updater->check();
 
     return app.exec();

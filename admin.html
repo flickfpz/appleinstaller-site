@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rigset Admin — App Installer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="admin-layout">
+
+    <!-- ── Sidebar ────────────────────────────────────────────────── -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-brand-icon" aria-hidden="true">&#x2B21;</span>
+        <span class="sidebar-brand-text">Rigset</span>
+        <span class="sidebar-brand-badge">Admin</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-item active" data-section="apps" role="button" tabindex="0">
+          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F4E6;</span>
+          Apps
+        </div>
+        <div class="sidebar-nav-item" data-section="themes" role="button" tabindex="0">
+          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F3A8;</span>
+          Themes
+        </div>
+        <div class="sidebar-nav-item" data-section="settings" role="button" tabindex="0">
+          <span class="sidebar-nav-icon" aria-hidden="true">&#x2699;&#xFE0F;</span>
+          Settings
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html">
+          <span aria-hidden="true">&larr;</span>
+          Back to Site
+        </a>
+      </div>
+    </aside>
+
+    <!-- ── Main ───────────────────────────────────────────────────── -->
+    <div class="admin-main">
+
+      <!-- Header -->
+      <header class="admin-header">
+        <div class="admin-header-left">
+          <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">&#x2630;</button>
+          <h1 class="admin-header-title" id="admin-header-title">Apps</h1>
+          <span class="admin-header-count" id="admin-header-count">0 items</span>
+        </div>
+        <div class="admin-header-actions" id="admin-header-actions"></div>
+      </header>
+
+      <!-- Content -->
+      <main class="admin-content">
+
+        <!-- ── Apps Section ──────────────────────────────────────── -->
+        <section class="admin-section active" id="section-apps">
+          <div class="admin-toolbar">
+            <div class="search-wrapper">
+              <span class="search-icon" aria-hidden="true">&#x1F50D;</span>
+              <input
+                type="text"
+                class="admin-search"
+                id="apps-search"
+                placeholder="Search apps..."
+                aria-label="Search apps" />
+            </div>
+            <select class="admin-filter-select" id="apps-category-filter" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              <option value="Browsers">Browsers</option>
+              <option value="Media">Media</option>
+              <option value="Dev Tools">Dev Tools</option>
+              <option value="Productivity">Productivity</option>
+              <option value="Communication">Communication</option>
+              <option value="Security">Security</option>
+            </select>
+            <select class="admin-filter-select" id="apps-platform-filter" aria-label="Filter by platform">
+              <option value="">All Platforms</option>
+              <option value="all">All</option>
+              <option value="windows">Windows</option>
+              <option value="mac">macOS</option>
+              <option value="linux">Linux</option>
+            </select>
+          </div>
+
+          <div class="app-table-wrapper">
+            <table class="app-table" id="apps-table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Platform</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="apps-table-body"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="apps-empty" style="display:none;">
+            <div class="empty-state-icon" aria-hidden="true">&#x1F50D;</div>
+            <div class="empty-state-text">No apps found</div>
+            <div class="empty-state-sub">Try a different search or filter</div>
+          </div>
+        </section>
+
+        <!-- ── Themes Section ────────────────────────────────────── -->
+        <section class="admin-section" id="section-themes">
+          <div class="theme-grid" id="themes-grid"></div>
+        </section>
+
+        <!-- ── Settings Section ──────────────────────────────────── -->
+        <section class="admin-section" id="section-settings">
+          <div class="settings-card">
+            <h3 class="settings-card-title">Version</h3>
+            <p class="settings-card-desc">App version number. Saved to localStorage and exported as version.json.</p>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="settings-version">Version</label>
+                <input type="text" class="form-input" id="settings-version" placeholder="e.g. 1.2.0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3 class="settings-card-title">Download URLs</h3>
+            <p class="settings-card-desc">Configure download links for each platform.</p>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="settings-url-windows">Windows</label>
+                <input type="text" class="form-input" id="settings-url-windows" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settings-url-mac">macOS</label>
+                <input type="text" class="form-input" id="settings-url-mac" placeholder="https://..." />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="settings-url-linux">Linux</label>
+                <input type="text" class="form-input" id="settings-url-linux" placeholder="https://..." />
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3 class="settings-card-title">Export</h3>
+            <p class="settings-card-desc">Download JSON files for integration with your build pipeline.</p>
+            <div class="export-group">
+              <button class="btn btn-primary" id="export-version-btn">&#x1F4E5; Export version.json</button>
+              <button class="btn btn-secondary" id="export-apps-btn">&#x1F4E5; Export apps.json</button>
+              <button class="btn btn-secondary" id="export-themes-btn">&#x1F4E5; Export themes.json</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3 class="settings-card-title">Danger Zone</h3>
+            <p class="settings-card-desc">Clear all admin data from localStorage and reset to defaults.</p>
+            <button class="btn btn-danger" id="reset-data-btn">&#x1F5D1;&#xFE0F; Reset All Data</button>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ── App Form Modal ──────────────────────────────────────────── -->
+  <div class="modal-overlay" id="app-modal-overlay">
+    <div class="modal" role="dialog" aria-labelledby="app-modal-title">
+      <div class="modal-header">
+        <h2 class="modal-title" id="app-modal-title">Add App</h2>
+        <button class="modal-close" id="app-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="app-form" class="form-grid" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" for="app-form-id">ID</label>
+          <input type="text" class="form-input" id="app-form-id" placeholder="my-app" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="app-form-name">Name</label>
+          <input type="text" class="form-input" id="app-form-name" placeholder="My App" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="app-form-category">Category</label>
+          <select class="form-select" id="app-form-category" required>
+            <option value="Browsers">Browsers</option>
+            <option value="Media">Media</option>
+            <option value="Dev Tools">Dev Tools</option>
+            <option value="Productivity">Productivity</option>
+            <option value="Communication">Communication</option>
+            <option value="Security">Security</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="app-form-platform">Platform</label>
+          <select class="form-select" id="app-form-platform" required>
+            <option value="all">All</option>
+            <option value="windows">Windows</option>
+            <option value="mac">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="app-form-icon">Icon (emoji)</label>
+          <input type="text" class="form-input" id="app-form-icon" placeholder="&#x1F4E6;" required />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label" for="app-form-desc">Description</label>
+          <input type="text" class="form-input" id="app-form-desc" placeholder="Short description..." required />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label" for="app-form-cmd-win">Windows Command</label>
+          <input type="text" class="form-input" id="app-form-cmd-win" placeholder="winget install ..." />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label" for="app-form-cmd-mac">macOS Command</label>
+          <input type="text" class="form-input" id="app-form-cmd-mac" placeholder="brew install ..." />
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label" for="app-form-cmd-linux">Linux Command</label>
+          <input type="text" class="form-input" id="app-form-cmd-linux" placeholder="sudo pacman -S ..." />
+        </div>
+        <div class="form-actions full-width">
+          <button type="button" class="btn btn-secondary" id="app-form-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="app-form-submit">Add App</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Theme Form Modal ────────────────────────────────────────── -->
+  <div class="modal-overlay" id="theme-modal-overlay">
+    <div class="modal" role="dialog" aria-labelledby="theme-modal-title">
+      <div class="modal-header">
+        <h2 class="modal-title" id="theme-modal-title">Add Custom Theme</h2>
+        <button class="modal-close" id="theme-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="theme-form" class="form-grid" autocomplete="off">
+        <div class="form-group full-width">
+          <label class="form-label" for="theme-form-name">Theme Name</label>
+          <input type="text" class="form-input" id="theme-form-name" placeholder="My Theme" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Background</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-bg" value="#0A0818" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-bg-hex" value="#0A0818" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Surface</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-surface" value="#161230" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-surface-hex" value="#161230" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Accent</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-accent" value="#8A50FF" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-accent-hex" value="#8A50FF" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Text Primary</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-textPrimary" value="#EBE4FF" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-textPrimary-hex" value="#EBE4FF" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Text Secondary</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-textSecondary" value="#9B91C8" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-textSecondary-hex" value="#9B91C8" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Border</label>
+          <div class="color-pick-row">
+            <input type="color" class="color-pick-input" id="theme-form-border" value="#37375F" />
+            <input type="text" class="form-input color-pick-hex" id="theme-form-border-hex" value="#37375F" />
+          </div>
+        </div>
+        <div class="form-actions full-width">
+          <button type="button" class="btn btn-secondary" id="theme-form-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="theme-form-submit">Add Theme</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Confirm Modal ───────────────────────────────────────────── -->
+  <div class="modal-overlay" id="confirm-modal-overlay">
+    <div class="modal" role="dialog" aria-labelledby="confirm-modal-title" style="max-width:420px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirm-modal-title">Confirm</h2>
+        <button class="modal-close" id="confirm-modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="confirm-message" id="confirm-modal-message"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" id="confirm-cancel-btn">Cancel</button>
+        <button class="btn btn-danger" id="confirm-ok-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/apps.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── Constants ───────────────────────────────────────────────── */
+    var LS_APPS      = 'ai-admin-apps';
+    var LS_THEMES    = 'ai-admin-custom-themes';
+    var LS_SETTINGS  = 'ai-admin-settings';
+
+    var CATEGORIES = ['Browsers','Media','Dev Tools','Productivity','Communication','Security'];
+
+    var BUILTIN_THEMES = {
+      midnight: {
+        name: 'Midnight',
+        colors: {
+          bg: '#0A0818', surface: '#161230', accent: '#8A50FF',
+          textPrimary: '#EBE4FF', textSecondary: '#9B91C8', border: '#37375F'
+        }
+      },
+      dark: {
+        name: 'Dark',
+        colors: {
+          bg: '#111111', surface: '#1C1C1E', accent: '#8A50FF',
+          textPrimary: '#F2F2F7', textSecondary: '#AEAEB2', border: '#3A3A3C'
+        }
+      },
+      light: {
+        name: 'Light',
+        colors: {
+          bg: '#FFFFFF', surface: '#F2F2F7', accent: '#8A50FF',
+          textPrimary: '#1D1D1F', textSecondary: '#6E6E73', border: '#D1D1D6'
+        }
+      }
+    };
+
+    var DEFAULT_SETTINGS = {
+      version: '1.0.0',
+      urls: {
+        windows: 'https://flickfpz.github.io/appleinstaller-site/AppInstaller-Setup.exe',
+        mac: 'https://flickfpz.github.io/appleinstaller-site/AppInstaller-macos-arm64.tar.gz',
+        linux: 'https://flickfpz.github.io/appleinstaller-site/AppInstaller-linux-x86_64.tar.gz'
+      }
+    };
+
+    /* ── Helpers ─────────────────────────────────────────────────── */
+
+    function ls(key, fallback) {
+      try {
+        var v = localStorage.getItem(key);
+        return v !== null ? JSON.parse(v) : fallback;
+      } catch (e) { return fallback; }
+    }
+
+    function lsSet(key, val) {
+      try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+    }
+
+    function toast(msg, type) {
+      var c = document.getElementById('toast-container');
+      var el = document.createElement('div');
+      el.className = 'toast toast-' + (type || 'success');
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 3200);
+    }
+
+    function escapeHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    /* ── State ───────────────────────────────────────────────────── */
+
+    var apps     = ls(LS_APPS, null);
+    if (!apps || !apps.length) {
+      apps = window.APP_REGISTRY.map(function (a) {
+        return Object.assign({}, a, { commands: a.commands || { windows: '', mac: '', linux: '' } });
+      });
+      lsSet(LS_APPS, apps);
+    }
+
+    var customThemes = ls(LS_THEMES, []);
+    var settings     = Object.assign({}, DEFAULT_SETTINGS, ls(LS_SETTINGS, {}));
+
+    var editingAppId  = null;
+    var confirmCb     = null;
+    var activeSection = 'apps';
+
+    /* ── Sidebar Navigation ──────────────────────────────────────── */
+
+    var navItems  = document.querySelectorAll('.sidebar-nav-item');
+    var sections  = document.querySelectorAll('.admin-section');
+    var headerTitle = document.getElementById('admin-header-title');
+    var headerCount = document.getElementById('admin-header-count');
+    var headerActions = document.getElementById('admin-header-actions');
+
+    function switchSection(name) {
+      activeSection = name;
+      navItems.forEach(function (el) {
+        el.classList.toggle('active', el.getAttribute('data-section') === name);
+      });
+      sections.forEach(function (el) {
+        el.classList.toggle('active', el.id === 'section-' + name);
+      });
+
+      var titles = { apps: 'Apps', themes: 'Themes', settings: 'Settings' };
+      headerTitle.textContent = titles[name] || name;
+
+      if (name === 'apps') {
+        headerActions.innerHTML = '<button class="btn btn-primary" id="add-app-btn">+ Add App</button>';
+        document.getElementById('add-app-btn').addEventListener('click', function () { openAppModal(null); });
+        updateAppCount();
+      } else if (name === 'themes') {
+        headerActions.innerHTML = '<button class="btn btn-primary" id="add-theme-btn">+ Add Theme</button>';
+        document.getElementById('add-theme-btn').addEventListener('click', function () { openThemeModal(); });
+        headerCount.textContent = (3 + customThemes.length) + ' themes';
+      } else {
+        headerActions.innerHTML = '';
+        headerCount.textContent = '';
+        loadSettingsForm();
+      }
+    }
+
+    navItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        switchSection(item.getAttribute('data-section'));
+        closeSidebar();
+      });
+      item.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          switchSection(item.getAttribute('data-section'));
+          closeSidebar();
+        }
+      });
+    });
+
+    /* ── Sidebar Mobile ──────────────────────────────────────────── */
+
+    var sidebar      = document.getElementById('admin-sidebar');
+    var sidebarTog   = document.getElementById('sidebar-toggle');
+    var sidebarOver  = document.getElementById('sidebar-overlay');
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOver.classList.remove('visible');
+    }
+
+    sidebarTog.addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+      sidebarOver.classList.toggle('visible');
+    });
+    sidebarOver.addEventListener('click', closeSidebar);
+
+    /* ── Apps Table ──────────────────────────────────────────────── */
+
+    var appsTableBody = document.getElementById('apps-table-body');
+    var appsEmpty     = document.getElementById('apps-empty');
+    var appsSearch    = document.getElementById('apps-search');
+    var appsCatFilter = document.getElementById('apps-category-filter');
+    var appsPlatFilter= document.getElementById('apps-platform-filter');
+
+    function updateAppCount() {
+      var filtered = getFilteredApps();
+      headerCount.textContent = filtered.length + ' app' + (filtered.length !== 1 ? 's' : '');
+    }
+
+    function getFilteredApps() {
+      var q    = appsSearch.value.toLowerCase().trim();
+      var cat  = appsCatFilter.value;
+      var plat = appsPlatFilter.value;
+      return apps.filter(function (a) {
+        if (cat && a.category !== cat) return false;
+        if (plat && a.platform !== plat) return false;
+        if (q) {
+          var haystack = (a.id + ' ' + a.name + ' ' + a.description + ' ' + a.category).toLowerCase();
+          if (haystack.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderAppsTable() {
+      var filtered = getFilteredApps();
+      if (!filtered.length) {
+        appsTableBody.innerHTML = '';
+        appsEmpty.style.display = '';
+        document.querySelector('.app-table-wrapper').style.display = 'none';
+        return;
+      }
+      appsEmpty.style.display = 'none';
+      document.querySelector('.app-table-wrapper').style.display = '';
+
+      var html = '';
+      for (var i = 0; i < filtered.length; i++) {
+        var a = filtered[i];
+        html += '<tr>' +
+          '<td class="app-table-icon">' + escapeHtml(a.icon || '') + '</td>' +
+          '<td class="app-table-name">' + escapeHtml(a.name) + '</td>' +
+          '<td><span class="category-badge">' + escapeHtml(a.category) + '</span></td>' +
+          '<td><span class="platform-badge">' + escapeHtml(a.platform || 'all') + '</span></td>' +
+          '<td class="app-table-desc">' + escapeHtml(a.description || '') + '</td>' +
+          '<td class="app-table-actions">' +
+            '<button class="btn btn-secondary btn-sm" data-edit="' + escapeHtml(a.id) + '">Edit</button>' +
+            '<button class="btn btn-danger btn-sm" data-delete="' + escapeHtml(a.id) + '">Delete</button>' +
+          '</td>' +
+        '</tr>';
+      }
+      appsTableBody.innerHTML = html;
+
+      appsTableBody.querySelectorAll('[data-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openAppModal(btn.getAttribute('data-edit'));
+        });
+      });
+      appsTableBody.querySelectorAll('[data-delete]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          confirmDelete(btn.getAttribute('data-delete'));
+        });
+      });
+
+      updateAppCount();
+    }
+
+    appsSearch.addEventListener('input', renderAppsTable);
+    appsCatFilter.addEventListener('change', renderAppsTable);
+    appsPlatFilter.addEventListener('change', renderAppsTable);
+
+    /* ── App Modal ───────────────────────────────────────────────── */
+
+    var appModal     = document.getElementById('app-modal-overlay');
+    var appForm      = document.getElementById('app-form');
+    var appFormTitle = document.getElementById('app-modal-title');
+    var appFormSubmit= document.getElementById('app-form-submit');
+
+    function openAppModal(editId) {
+      editingAppId = editId;
+      appForm.reset();
+      if (editId) {
+        var app = apps.find(function (a) { return a.id === editId; });
+        if (!app) return;
+        appFormTitle.textContent = 'Edit App';
+        appFormSubmit.textContent = 'Save Changes';
+        document.getElementById('app-form-id').value = app.id;
+        document.getElementById('app-form-id').disabled = true;
+        document.getElementById('app-form-name').value = app.name;
+        document.getElementById('app-form-category').value = app.category;
+        document.getElementById('app-form-platform').value = app.platform || 'all';
+        document.getElementById('app-form-icon').value = app.icon || '';
+        document.getElementById('app-form-desc').value = app.description || '';
+        var cmds = app.commands || {};
+        document.getElementById('app-form-cmd-win').value  = cmds.windows || '';
+        document.getElementById('app-form-cmd-mac').value  = cmds.mac || '';
+        document.getElementById('app-form-cmd-linux').value = cmds.linux || '';
+      } else {
+        appFormTitle.textContent = 'Add App';
+        appFormSubmit.textContent = 'Add App';
+        document.getElementById('app-form-id').disabled = false;
+      }
+      appModal.classList.add('open');
+    }
+
+    function closeAppModal() {
+      appModal.classList.remove('open');
+      editingAppId = null;
+    }
+
+    document.getElementById('app-modal-close').addEventListener('click', closeAppModal);
+    document.getElementById('app-form-cancel').addEventListener('click', closeAppModal);
+    appModal.addEventListener('click', function (e) {
+      if (e.target === appModal) closeAppModal();
+    });
+
+    appForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var id   = document.getElementById('app-form-id').value.trim();
+      var name = document.getElementById('app-form-name').value.trim();
+      var cat  = document.getElementById('app-form-category').value;
+      var plat = document.getElementById('app-form-platform').value;
+      var icon = document.getElementById('app-form-icon').value.trim();
+      var desc = document.getElementById('app-form-desc').value.trim();
+      var cmdW = document.getElementById('app-form-cmd-win').value.trim();
+      var cmdM = document.getElementById('app-form-cmd-mac').value.trim();
+      var cmdL = document.getElementById('app-form-cmd-linux').value.trim();
+
+      if (!id || !name) { toast('ID and Name are required', 'error'); return; }
+
+      if (editingAppId) {
+        var idx = apps.findIndex(function (a) { return a.id === editingAppId; });
+        if (idx !== -1) {
+          apps[idx] = {
+            id: id, name: name, category: cat, platform: plat,
+            icon: icon, description: desc,
+            commands: { windows: cmdW, mac: cmdM, linux: cmdL }
+          };
+        }
+        toast('App updated');
+      } else {
+        if (apps.some(function (a) { return a.id === id; })) {
+          toast('An app with this ID already exists', 'error');
+          return;
+        }
+        apps.push({
+          id: id, name: name, category: cat, platform: plat,
+          icon: icon, description: desc,
+          commands: { windows: cmdW, mac: cmdM, linux: cmdL }
+        });
+        toast('App added');
+      }
+
+      lsSet(LS_APPS, apps);
+      renderAppsTable();
+      closeAppModal();
+    });
+
+    /* ── Delete Confirm ──────────────────────────────────────────── */
+
+    var confirmOverlay = document.getElementById('confirm-modal-overlay');
+    var confirmMessage = document.getElementById('confirm-modal-message');
+
+    function confirmDelete(id) {
+      var app = apps.find(function (a) { return a.id === id; });
+      if (!app) return;
+      confirmMessage.innerHTML = 'Are you sure you want to delete <span class="confirm-highlight">' +
+        escapeHtml(app.name) + '</span>? This cannot be undone.';
+      confirmOverlay.classList.add('open');
+      confirmCb = function () {
+        apps = apps.filter(function (a) { return a.id !== id; });
+        lsSet(LS_APPS, apps);
+        renderAppsTable();
+        toast('App deleted');
+      };
+    }
+
+    document.getElementById('confirm-modal-close').addEventListener('click', function () {
+      confirmOverlay.classList.remove('open');
+      confirmCb = null;
+    });
+    document.getElementById('confirm-cancel-btn').addEventListener('click', function () {
+      confirmOverlay.classList.remove('open');
+      confirmCb = null;
+    });
+    confirmOverlay.addEventListener('click', function (e) {
+      if (e.target === confirmOverlay) { confirmOverlay.classList.remove('open'); confirmCb = null; }
+    });
+    document.getElementById('confirm-ok-btn').addEventListener('click', function () {
+      if (confirmCb) confirmCb();
+      confirmOverlay.classList.remove('open');
+      confirmCb = null;
+    });
+
+    /* ── Themes ──────────────────────────────────────────────────── */
+
+    var themesGrid = document.getElementById('themes-grid');
+
+    function renderThemes() {
+      var html = '';
+
+      var keys = Object.keys(BUILTIN_THEMES);
+      for (var i = 0; i < keys.length; i++) {
+        var t = BUILTIN_THEMES[keys[i]];
+        html += themeCardHtml(t.name, t.colors, null);
+      }
+
+      for (var j = 0; j < customThemes.length; j++) {
+        html += themeCardHtml(customThemes[j].name, customThemes[j].colors, j);
+      }
+
+      themesGrid.innerHTML = html;
+
+      themesGrid.querySelectorAll('[data-delete-theme]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-delete-theme'), 10);
+          customThemes.splice(idx, 1);
+          lsSet(LS_THEMES, customThemes);
+          renderThemes();
+          headerCount.textContent = (3 + customThemes.length) + ' themes';
+          toast('Theme deleted');
+        });
+      });
+
+      themesGrid.querySelectorAll('[data-export-theme]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-export-theme'), 10);
+          var theme = idx === null ? null : customThemes[idx];
+          if (theme) downloadJson(theme.name.toLowerCase().replace(/\s+/g, '-') + '.json', theme);
+          toast('Theme exported');
+        });
+      });
+    }
+
+    function themeCardHtml(name, colors, idx) {
+      var swatchKeys = ['bg','surface','accent','textPrimary','textSecondary','border'];
+      var swatches = '';
+      for (var i = 0; i < swatchKeys.length; i++) {
+        var k = swatchKeys[i];
+        var label = k.replace(/([A-Z])/g, ' $1').trim();
+        swatches += '<div class="theme-swatch" style="background:' + colors[k] + '">' +
+          '<span class="theme-swatch-label">' + label + '</span></div>';
+      }
+
+      var delBtn = idx !== null
+        ? '<button class="btn btn-danger btn-sm" data-delete-theme="' + idx + '">Delete</button>'
+        : '';
+      var exportBtn = '<button class="btn btn-secondary btn-sm" data-export-theme="' + (idx !== null ? idx : '') + '">Export</button>';
+
+      return '<div class="theme-card">' +
+        '<div class="theme-card-preview" style="background:' + colors.bg + ';color:' + colors.textPrimary + '">' +
+          '<div class="theme-card-preview-title" style="color:' + colors.textPrimary + '">' + escapeHtml(name) + '</div>' +
+          '<div class="theme-card-preview-subtitle" style="color:' + colors.textSecondary + '">Preview text</div>' +
+        '</div>' +
+        '<div class="theme-card-swatches">' + swatches + '</div>' +
+        '<div class="theme-card-body">' +
+          '<div class="theme-card-name">' + escapeHtml(name) + '</div>' +
+          '<div class="theme-card-meta">' + (idx !== null ? 'Custom theme' : 'Built-in theme') + '</div>' +
+        '</div>' +
+        '<div class="theme-card-actions">' + exportBtn + delBtn + '</div>' +
+      '</div>';
+    }
+
+    /* ── Theme Modal ─────────────────────────────────────────────── */
+
+    var themeModal     = document.getElementById('theme-modal-overlay');
+    var themeForm      = document.getElementById('theme-form');
+
+    var colorFields = ['bg','surface','accent','textPrimary','textSecondary','border'];
+    colorFields.forEach(function (field) {
+      var picker = document.getElementById('theme-form-' + field);
+      var hex    = document.getElementById('theme-form-' + field + '-hex');
+      picker.addEventListener('input', function () { hex.value = picker.value; });
+      hex.addEventListener('input', function () {
+        if (/^#[0-9a-fA-F]{6}$/.test(hex.value)) picker.value = hex.value;
+      });
+    });
+
+    function openThemeModal() {
+      themeForm.reset();
+      colorFields.forEach(function (f) {
+        document.getElementById('theme-form-' + f).value = BUILTIN_THEMES.midnight.colors[f];
+        document.getElementById('theme-form-' + f + '-hex').value = BUILTIN_THEMES.midnight.colors[f];
+      });
+      document.getElementById('theme-form-submit').textContent = 'Add Theme';
+      themeModal.classList.add('open');
+    }
+
+    function closeThemeModal() { themeModal.classList.remove('open'); }
+
+    document.getElementById('theme-modal-close').addEventListener('click', closeThemeModal);
+    document.getElementById('theme-form-cancel').addEventListener('click', closeThemeModal);
+    themeModal.addEventListener('click', function (e) { if (e.target === themeModal) closeThemeModal(); });
+
+    themeForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = document.getElementById('theme-form-name').value.trim();
+      if (!name) { toast('Theme name is required', 'error'); return; }
+
+      var colors = {};
+      colorFields.forEach(function (f) {
+        colors[f] = document.getElementById('theme-form-' + f + '-hex').value.trim();
+      });
+
+      customThemes.push({ name: name, colors: colors });
+      lsSet(LS_THEMES, customThemes);
+      renderThemes();
+      headerCount.textContent = (3 + customThemes.length) + ' themes';
+      closeThemeModal();
+      toast('Theme added');
+    });
+
+    /* ── Settings ────────────────────────────────────────────────── */
+
+    var settingsVersion = document.getElementById('settings-version');
+    var settingsUrlWin  = document.getElementById('settings-url-windows');
+    var settingsUrlMac  = document.getElementById('settings-url-mac');
+    var settingsUrlLinux= document.getElementById('settings-url-linux');
+
+    function loadSettingsForm() {
+      settingsVersion.value  = settings.version || '1.0.0';
+      settingsUrlWin.value   = (settings.urls && settings.urls.windows) || '';
+      settingsUrlMac.value   = (settings.urls && settings.urls.mac) || '';
+      settingsUrlLinux.value = (settings.urls && settings.urls.linux) || '';
+    }
+
+    function saveSettings() {
+      settings.version = settingsVersion.value.trim() || '1.0.0';
+      settings.urls = {
+        windows: settingsUrlWin.value.trim(),
+        mac:     settingsUrlMac.value.trim(),
+        linux:   settingsUrlLinux.value.trim()
+      };
+      lsSet(LS_SETTINGS, settings);
+    }
+
+    [settingsVersion, settingsUrlWin, settingsUrlMac, settingsUrlLinux].forEach(function (el) {
+      el.addEventListener('change', function () { saveSettings(); toast('Settings saved'); });
+    });
+
+    /* ── Exports ─────────────────────────────────────────────────── */
+
+    function downloadJson(filename, data) {
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('export-version-btn').addEventListener('click', function () {
+      saveSettings();
+      downloadJson('version.json', {
+        version: settings.version,
+        downloadUrls: settings.urls
+      });
+      toast('version.json exported');
+    });
+
+    document.getElementById('export-apps-btn').addEventListener('click', function () {
+      var registry = apps.map(function (a) {
+        return {
+          id: a.id,
+          name: a.name,
+          category: a.category,
+          description: a.description,
+          icon: a.icon,
+          platform: a.platform,
+          commands: a.commands || {}
+        };
+      });
+      downloadJson('apps.json', registry);
+      toast('apps.json exported');
+    });
+
+    document.getElementById('export-themes-btn').addEventListener('click', function () {
+      downloadJson('themes.json', {
+        builtin: BUILTIN_THEMES,
+        custom: customThemes
+      });
+      toast('themes.json exported');
+    });
+
+    /* ── Reset ───────────────────────────────────────────────────── */
+
+    document.getElementById('reset-data-btn').addEventListener('click', function () {
+      confirmMessage.innerHTML = 'This will remove all admin data from localStorage and reset to defaults. Are you sure?';
+      confirmOverlay.classList.add('open');
+      confirmCb = function () {
+        try {
+          localStorage.removeItem(LS_APPS);
+          localStorage.removeItem(LS_THEMES);
+          localStorage.removeItem(LS_SETTINGS);
+        } catch (e) {}
+        apps = window.APP_REGISTRY.map(function (a) {
+          return Object.assign({}, a, { commands: a.commands || { windows: '', mac: '', linux: '' } });
+        });
+        lsSet(LS_APPS, apps);
+        customThemes = [];
+        settings = Object.assign({}, DEFAULT_SETTINGS);
+        renderAppsTable();
+        renderThemes();
+        loadSettingsForm();
+        toast('All data reset');
+      };
+    });
+
+    /* ── Keyboard shortcuts ──────────────────────────────────────── */
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        if (appModal.classList.contains('open'))     closeAppModal();
+        if (themeModal.classList.contains('open'))   closeThemeModal();
+        if (confirmOverlay.classList.contains('open')) {
+          confirmOverlay.classList.remove('open');
+          confirmCb = null;
+        }
+        closeSidebar();
+      }
+    });
+
+    /* ── Init ────────────────────────────────────────────────────── */
+
+    renderAppsTable();
+    renderThemes();
+    switchSection('apps');
+
+  }());
+  </script>
+
+</body>
+</html>

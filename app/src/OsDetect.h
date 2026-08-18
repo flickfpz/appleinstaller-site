@@ -21,6 +21,7 @@ public:
         Arch,       // pacman-based (Arch, Manjaro, EndeavourOS…)
         Debian,     // apt-based  (Debian, Ubuntu, Mint, Pop!_OS…)
         Fedora,     // dnf-based  (Fedora, RHEL, AlmaLinux, Rocky…)
+        Void,       // xbps-based (Void Linux)
         Unknown
     };
 
@@ -40,6 +41,7 @@ public:
             case OS::Arch:    return archDistroName();
             case OS::Debian:  return debianDistroName();
             case OS::Fedora:  return fedoraDistroName();
+            case OS::Void:    return voidLinuxDistroName();
             default:          return "Unknown OS";
         }
     }
@@ -53,6 +55,7 @@ public:
             case OS::Arch:    return "Arch";
             case OS::Debian:  return "Debian";
             case OS::Fedora:  return "Fedora";
+            case OS::Void:    return "Void";
             default:          return "?";
         }
     }
@@ -67,6 +70,7 @@ public:
             case OS::Arch:    return "sudo pacman -S --noconfirm";
             case OS::Debian:  return "sudo apt-get install -y";
             case OS::Fedora:  return "sudo dnf install -y";
+            case OS::Void:    return "sudo xbps-install -Sy";
             default:          return "";
         }
     }
@@ -88,7 +92,8 @@ public:
     static bool isArch()    { return current() == OS::Arch;    }
     static bool isDebian()  { return current() == OS::Debian;  }
     static bool isFedora()  { return current() == OS::Fedora;  }
-    static bool isLinux()   { return isArch() || isDebian() || isFedora(); }
+    static bool isVoid()    { return current() == OS::Void;    }
+    static bool isLinux()   { return isArch() || isDebian() || isFedora() || isVoid(); }
 
 private:
     // ── Core detection logic ──────────────────────────────────────────────────
@@ -111,7 +116,7 @@ private:
         // Arch and derivatives: ID=arch  /  ID_LIKE=arch
         if (lower.contains("id=arch") || lower.contains("id_like=arch")
             || lower.contains("id=manjaro") || lower.contains("id=endeavouros")
-            || lower.contains("id=garuda"))
+            || lower.contains("id=garuda") || lower.contains("id=cachyos"))
             return OS::Arch;
 
         // Fedora / RHEL family
@@ -119,6 +124,10 @@ private:
             || lower.contains("id=rhel")  || lower.contains("id=centos")
             || lower.contains("id=almalinux") || lower.contains("id=rocky"))
             return OS::Fedora;
+
+        // Void Linux (xbps-based, NOT debian)
+        if (lower.contains("id=void") || lower.contains("id_like=void"))
+            return OS::Void;
 
         // Debian / Ubuntu family (check after Fedora to avoid false ID_LIKE hits)
         if (lower.contains("id=debian") || lower.contains("id=ubuntu")
@@ -134,6 +143,8 @@ private:
             return OS::Fedora;
         if (QFile::exists("/usr/bin/apt-get") || QFile::exists("/bin/apt-get"))
             return OS::Debian;
+        if (QFile::exists("/usr/bin/xbps-install") || QFile::exists("/bin/xbps-install"))
+            return OS::Void;
 
         return OS::Unknown;
 #else
@@ -208,5 +219,11 @@ private:
     {
         QString name = osReleaseField("PRETTY_NAME");
         return name.isEmpty() ? "Fedora" : name;
+    }
+
+    static QString voidLinuxDistroName()
+    {
+        QString name = osReleaseField("PRETTY_NAME");
+        return name.isEmpty() ? "Void Linux" : name;
     }
 };

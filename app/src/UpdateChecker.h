@@ -4,6 +4,8 @@
 #include <QNetworkReply>
 #include <QString>
 
+class QWidget;
+
 class UpdateChecker : public QObject
 {
     Q_OBJECT
@@ -12,8 +14,12 @@ public:
 
     void check();
 
+    static void showOverlay(QWidget *parentWindow,
+                            const QString &latestVersion,
+                            const QString &downloadUrl);
+
 signals:
-    void updateAvailable(const QString &latestVersion, const QString &downloadUrl);
+    void updateRequired(const QString &latestVersion, const QString &downloadUrl);
 
 private slots:
     void onReplyFinished(QNetworkReply *reply);

@@ -1,33 +1,33 @@
 ; ─────────────────────────────────────────────────────────────────────────────
-; installer.nsi — NSIS Installer Script for App Installer
+; installer.nsi — NSIS Installer Script for Rigset
 ;
 ; Creates a proper Windows .exe installer with a wizard UI:
 ;   Welcome → License → Choose Dir → Install → Finish
 ;
 ; Prerequisites:
 ;   - NSIS (https://nsis.sourceforge.io) installed
-;   - App Installer built (build\AppInstaller.exe exists)
+;   - Rigset built (build\Rigset.exe exists)
 ;
 ; Compile:
 ;   makensis installer.nsi
 ;
 ; Output:
-;   AppInstaller-Setup.exe (standalone installer)
+;   Rigset-Setup.exe (standalone installer)
 ; ─────────────────────────────────────────────────────────────────────────────
 
 !include "MUI2.nsh"
 
 ; ── General ──────────────────────────────────────────────────────────────────
-Name "App Installer"
-OutFile "AppInstaller-Setup.exe"
-InstallDir "$LOCALAPPDATA\AppInstaller"
-InstallDirRegKey HKCU "Software\AppInstaller" "InstallDir"
+Name "Rigset"
+OutFile "Rigset-Setup.exe"
+InstallDir "$LOCALAPPDATA\Rigset"
+InstallDirRegKey HKCU "Software\Rigset" "InstallDir"
 RequestExecutionLevel user
-BrandingText "App Installer"
+BrandingText "Rigset"
 
-!define APP_NAME      "App Installer"
+!define APP_NAME      "Rigset"
 !define APP_VERSION   "1.0"
-!define APP_PUBLISHER "App Installer Contributors"
+!define APP_PUBLISHER "Rigset Contributors"
 !define APP_WEB_SITE  "https://flickfpz.github.io/appleinstaller-site"
 !define HELP_LINK     "https://github.com/flickfpz/appleinstaller/issues"
 
@@ -57,7 +57,7 @@ VIAddVersionKey "LegalCopyright"  "MIT License"
 !insertmacro MUI_LANGUAGE "English"
 
 ; ── Installer Sections ──────────────────────────────────────────────────────
-Section "App Installer (required)" SecMain
+Section "Rigset (required)" SecMain
   SectionIn RO
 
   SetOutPath "$INSTDIR"
@@ -65,36 +65,36 @@ Section "App Installer (required)" SecMain
   ; ── Check for pre-built binary ─────────────────────────────────────────────
   ; Try multiple locations where the built binary might be
 
-  IfFileExists "build\Release\AppleInstaller.exe" 0 +3
-    CopyFiles "build\Release\AppleInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "build\Release\Rigset.exe" 0 +3
+    CopyFiles "build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "build\AppleInstaller.exe" 0 +3
-    CopyFiles "build\AppleInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "build\Rigset.exe" 0 +3
+    CopyFiles "build\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "..\build\Release\AppleInstaller.exe" 0 +3
-    CopyFiles "..\build\Release\AppleInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "..\build\Release\Rigset.exe" 0 +3
+    CopyFiles "..\build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "..\build\AppleInstaller.exe" 0 +3
-    CopyFiles "..\build\AppleInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "..\build\Rigset.exe" 0 +3
+    CopyFiles "..\build\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "build\Release\AppInstaller.exe" 0 +3
-    CopyFiles "build\Release\AppInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "build\Release\Rigset.exe" 0 +3
+    CopyFiles "build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "build\AppInstaller.exe" 0 +3
-    CopyFiles "build\AppInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "build\Rigset.exe" 0 +3
+    CopyFiles "build\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "..\build\Release\AppInstaller.exe" 0 +3
-    CopyFiles "..\build\Release\AppInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "..\build\Release\Rigset.exe" 0 +3
+    CopyFiles "..\build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
-  IfFileExists "..\build\AppInstaller.exe" 0 +3
-    CopyFiles "..\build\AppInstaller.exe" "$INSTDIR\AppInstaller.exe"
+  IfFileExists "..\build\Rigset.exe" 0 +3
+    CopyFiles "..\build\Rigset.exe" "$INSTDIR\Rigset.exe"
     Goto binary_done
 
   ; Binary not found — show error
@@ -105,7 +105,7 @@ Section "App Installer (required)" SecMain
 
   ; ── Deploy Qt DLLs via windeployqt ─────────────────────────────────────────
   DetailPrint "Deploying Qt runtime DLLs..."
-  nsExec::ExecToLog '"$INSTDIR\AppInstaller.exe" --version'
+  nsExec::ExecToLog '"$INSTDIR\Rigset.exe" --version'
   ; Try windeployqt from common Qt locations
   var /GLOBAL WINDEPLOY
   StrCpy $WINDEPLOY ""
@@ -126,7 +126,7 @@ Section "App Installer (required)" SecMain
 
   deploy_qt:
     DetailPrint "Running windeployqt..."
-    nsExec::ExecToLog '"$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$INSTDIR\AppInstaller.exe"'
+    nsExec::ExecToLog '"$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$INSTDIR\Rigset.exe"'
 
   skip_deploy:
 
@@ -139,36 +139,36 @@ Section "App Installer (required)" SecMain
 
   ; ── Start Menu shortcut ───────────────────────────────────────────────────
   CreateDirectory "$SMPROGRAMS\${APP_NAME}"
-  CreateShortCut  "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\AppInstaller.exe"
+  CreateShortCut  "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\Rigset.exe"
   CreateShortCut  "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk"   "$INSTDIR\Uninstall.exe"
 
   ; ── Desktop shortcut (optional) ───────────────────────────────────────────
   MessageBox MB_YESNO "Create a desktop shortcut?" IDNO skip_desktop
-    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\AppInstaller.exe"
+    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\Rigset.exe"
   skip_desktop:
 
   ; ── Store install path ────────────────────────────────────────────────────
-  WriteRegStr HKCU "Software\AppInstaller" "InstallDir" "$INSTDIR"
+  WriteRegStr HKCU "Software\Rigset" "InstallDir" "$INSTDIR"
 
   ; ── Uninstaller ────────────────────────────────────────────────────────────
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   ; ── Add/Remove Programs entry ─────────────────────────────────────────────
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "DisplayName"     "${APP_NAME}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "UninstallString" '"$INSTDIR\Uninstall.exe"'
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "InstallLocation" "$INSTDIR"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "DisplayVersion"  "${APP_VERSION}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "Publisher"       "${APP_PUBLISHER}"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "URLInfoAbout"    "${APP_WEB_SITE}"
-  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "NoModify" 1
-  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller" \
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset" \
     "NoRepair" 1
 
 SectionEnd
@@ -177,7 +177,7 @@ SectionEnd
 Section "Uninstall"
 
   ; Remove files
-  Delete "$INSTDIR\AppInstaller.exe"
+  Delete "$INSTDIR\Rigset.exe"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\install.bat"
   Delete "$INSTDIR\install.sh"
@@ -190,15 +190,15 @@ Section "Uninstall"
   Delete "$DESKTOP\${APP_NAME}.lnk"
 
   ; Remove registry keys
-  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AppInstaller"
-  DeleteRegKey HKCU "Software\AppInstaller"
+  DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rigset"
+  DeleteRegKey HKCU "Software\Rigset"
 
 SectionEnd
 
 ; ── Callbacks ────────────────────────────────────────────────────────────────
 Function .onInit
   ; Check if already installed
-  ReadRegStr $0 HKCU "Software\AppInstaller" "InstallDir"
+  ReadRegStr $0 HKCU "Software\Rigset" "InstallDir"
   StrCmp $0 "" done
     MessageBox MB_YESNO "${APP_NAME} is already installed.$\n$\nDo you want to reinstall?" IDYES done
     Abort

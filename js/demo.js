@@ -72,15 +72,15 @@ window.DemoPanel = (function () {
   }
 
   function generateCommand() {
-    var names = [];
+    var lines = [];
     state.selectedIds.forEach(function (id) {
       var app = APP_REGISTRY.find(function (a) { return a.id === id; });
-      if (app) names.push(app.name);
+      if (!app || !app.commands) return;
+      var cmd = app.commands[detectedPlatform] || app.commands.linux || '';
+      if (cmd) lines.push(cmd);
     });
-    if (detectedPlatform === 'windows') {
-      return '.\\install.bat --apps "' + names.join(',') + '"';
-    }
-    return './install.sh --apps "' + names.join(',') + '"';
+    if (lines.length === 0) return '# No commands available';
+    return lines.join(' && \\\n');
   }
 
   function escapeHtml(str) {
@@ -223,7 +223,11 @@ window.DemoPanel = (function () {
       else if (detectedPlatform === 'macOS')       detectedPlatform = 'mac';
       else if (detectedPlatform === 'Arch Linux'
             || detectedPlatform === 'Debian/Ubuntu'
-            || detectedPlatform === 'Fedora')      detectedPlatform = 'linux';
+            || detectedPlatform === 'Fedora'
+            || detectedPlatform === 'Void Linux'
+            || detectedPlatform === 'CachyOS'
+            || detectedPlatform === 'Manjaro'
+            || detectedPlatform === 'Linux Mint')  detectedPlatform = 'linux';
       else                                         detectedPlatform = 'linux';
     }
     render();

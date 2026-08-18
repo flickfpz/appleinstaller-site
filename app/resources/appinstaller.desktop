@@ -1,12 +1,12 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=App Installer
+Name=Rigset
 GenericName=Software Installer
 Comment=Install your favourite apps in one click
-Exec=appinstaller
-Icon=appinstaller
+Exec=rigset
+Icon=rigset
 Categories=System;PackageManager;
 Keywords=install;apps;software;packages;
 StartupNotify=true
-StartupWMClass=AppleInstaller
+StartupWMClass=Rigset

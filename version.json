@@ -1,8 +1,9 @@
 {
   "version": "1.0.0",
+  "name": "Rigset",
   "download": {
-    "windows": "https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-Setup.exe",
-    "macos": "https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-macos-arm64.tar.gz",
-    "linux": "https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-linux-x86_64.tar.gz"
+    "windows": "https://flickfpz.github.io/appleinstaller-site/AppInstaller-Setup.exe",
+    "macos": "https://flickfpz.github.io/appleinstaller-site/AppInstaller-macos-arm64.tar.gz",
+    "linux": "https://flickfpz.github.io/appleinstaller-site/AppInstaller-linux-x86_64.tar.gz"
   }
 }

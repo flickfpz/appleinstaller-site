@@ -8,7 +8,7 @@
  */
 window.OsDetect = (function () {
 
-  var PLATFORMS = ['Windows', 'macOS', 'Arch Linux', 'Debian/Ubuntu', 'Fedora'];
+  var PLATFORMS = ['Windows', 'macOS', 'Arch Linux', 'Debian/Ubuntu', 'Fedora', 'Void Linux'];
 
   var IA_BASE = 'https://flickfpz.github.io/appleinstaller-site';
 
@@ -17,7 +17,11 @@ window.OsDetect = (function () {
     'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-macos-arm64.tar.gz | tar -xz' },
     'Arch Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
     'Debian/Ubuntu':  { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
-    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' }
+    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'CachyOS':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Manjaro':        { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Linux Mint':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Void Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' }
   };
 
   function detect(ua) {
@@ -27,7 +31,11 @@ window.OsDetect = (function () {
     if (/Windows/i.test(ua))              return 'Windows';
     if (/Mac OS X|macOS/i.test(ua))       return 'macOS';
     if (/Fedora|CentOS|RHEL/i.test(ua))   return 'Fedora';
-    if (/Arch|Manjaro/i.test(ua))         return 'Arch Linux';
+    if (/CachyOS/i.test(ua))              return 'CachyOS';
+    if (/Manjaro/i.test(ua))              return 'Manjaro';
+    if (/Linux Mint/i.test(ua))           return 'Linux Mint';
+    if (/Void/i.test(ua))                 return 'Void Linux';
+    if (/Arch/i.test(ua))                 return 'Arch Linux';
     return 'Debian/Ubuntu';
   }
 

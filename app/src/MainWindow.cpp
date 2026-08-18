@@ -244,7 +244,7 @@ void ThemePicker::paintEvent(QPaintEvent *)
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    setWindowTitle("App Installer");
+    setWindowTitle("Rigset");
     setMinimumSize(960, 660);
     resize(1180, 760);
 
@@ -362,7 +362,7 @@ void MainWindow::buildHeader(QWidget *parent, QVBoxLayout *layout)
     hLayout->setContentsMargins(28, 20, 28, 14);
     hLayout->setSpacing(6);
 
-    m_titleLabel = new QLabel("App Installer", m_headerWidget);
+    m_titleLabel = new QLabel("Rigset", m_headerWidget);
     m_titleLabel->setFont(ThemeManager::fontTitle());
 
     m_subtitleLabel = new QLabel(

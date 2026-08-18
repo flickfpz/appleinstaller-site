@@ -1,0 +1,189 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string (e.g. 1.0.0). Leave empty to use tag.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: Rigset-linux-x86_64.tar.gz
+          - os: windows-latest
+            artifact: Rigset-Setup.exe
+          - os: macos-latest
+            artifact: Rigset-macos-arm64.tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Linux ──────────────────────────────────────────────────────────────
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
+            libqt6widgets6 libqt6network6 libqt6concurrent6 \
+            qt6-base-dev-tools libgl-dev
+
+      # ── Windows ────────────────────────────────────────────────────────────
+      - name: Setup MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt6 + Ninja + NSIS (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          pip install aqtinstall
+          aqt install-qt windows desktop 6.8.2 win64_msvc2022_64 -O C:/Qt
+          choco install ninja nsis -y
+
+      # ── macOS ──────────────────────────────────────────────────────────────
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake qt@6 ninja
+          echo "/opt/homebrew/opt/qt@6/bin:/opt/homebrew/bin" >> "$GITHUB_PATH"
+
+      # ── Build ──────────────────────────────────────────────────────────────
+      - name: Configure (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: cmake -S app -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S app -B build -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/msvc2022_64" -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # ── Package (Windows) ──────────────────────────────────────────────────
+      - name: Build NSIS installer (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          WINDEPLOY="C:/Qt/6.8.2/msvc2022_64/bin/windeployqt.exe"
+          BINARY=""
+          for b in build/Release/Rigset.exe build/Rigset.exe; do
+            if [ -f "$b" ]; then BINARY="$b"; break; fi
+          done
+          if [ -n "$BINARY" ]; then
+            if [ -f "$WINDEPLOY" ]; then
+              "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$BINARY"
+            fi
+            cp "$BINARY" Rigset.exe
+          fi
+          export PATH="/c/Program Files (x86)/NSIS:$PATH"
+          cd app && makensis installer.nsi && cd .. && mv app/Rigset-Setup.exe .
+
+      - name: Upload Windows installer
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: Rigset-Setup.exe
+
+      # ── Package (Linux) ────────────────────────────────────────────────────
+      - name: Package Linux binary
+        if: runner.os == 'Linux'
+        run: |
+          BINARY=""
+          for b in build/Rigset; do
+            if [ -f "$b" ]; then BINARY="$b"; break; fi
+          done
+          [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
+          chmod +x "$BINARY"
+          cp "$BINARY" Rigset
+          tar -czf Rigset-linux-x86_64.tar.gz Rigset
+
+      - name: Upload Linux artifact
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-binary
+          path: Rigset-linux-x86_64.tar.gz
+
+      # ── Package (macOS) ────────────────────────────────────────────────────
+      - name: Package macOS binary
+        if: runner.os == 'macOS'
+        run: |
+          BINARY=""
+          for b in build/Rigset.app build/Rigset; do
+            if [ -e "$b" ]; then BINARY="$b"; break; fi
+          done
+          [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
+          if [ -d "$BINARY" ]; then
+            tar -czf Rigset-macos-arm64.tar.gz -C build "$(basename "$BINARY")"
+          else
+            cp "$BINARY" Rigset
+            tar -czf Rigset-macos-arm64.tar.gz Rigset
+          fi
+
+      - name: Upload macOS artifact
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-binary
+          path: Rigset-macos-arm64.tar.gz
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            windows-installer/Rigset-Setup.exe
+            linux-binary/Rigset-linux-x86_64.tar.gz
+            macos-binary/Rigset-macos-arm64.tar.gz
+
+      - name: Update site binaries + version
+        run: |
+          cp windows-installer/Rigset-Setup.exe .
+          cp linux-binary/Rigset-linux-x86_64.tar.gz .
+          cp macos-binary/Rigset-macos-arm64.tar.gz .
+
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="${{ github.event.inputs.version }}"
+          VERSION="${VERSION:-$TAG}"
+          if [ -n "$VERSION" ]; then
+            python3 -c "
+          import json
+          with open('version.json') as f:
+              d = json.load(f)
+          d['version'] = '$VERSION'
+          with open('version.json', 'w') as f:
+              json.dump(d, f, indent=2)
+          "
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Rigset-Setup.exe Rigset-linux-x86_64.tar.gz Rigset-macos-arm64.tar.gz version.json
+          git commit -m "Update binaries to ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}"
+          git push origin HEAD:main

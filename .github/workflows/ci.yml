@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Linux ──────────────────────────────────────────────────────────────
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
+            libqt6widgets6 libqt6network6 libqt6concurrent6 \
+            qt6-base-dev-tools libgl-dev
+
+      # ── Windows ────────────────────────────────────────────────────────────
+      - name: Setup MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt6 + Ninja (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          pip install aqtinstall
+          aqt install-qt windows desktop 6.8.2 win64_msvc2022_64 -O C:/Qt
+          choco install ninja -y
+
+      # ── macOS ──────────────────────────────────────────────────────────────
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake qt@6 ninja
+          echo "/opt/homebrew/opt/qt@6/bin:/opt/homebrew/bin" >> "$GITHUB_PATH"
+
+      # ── Build ──────────────────────────────────────────────────────────────
+      - name: Configure (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: cmake -S app -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S app -B build -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_PREFIX_PATH="C:/Qt/6.8.2/msvc2022_64" -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Verify binary
+        shell: bash
+        run: |
+          FOUND=0
+          for f in \
+            build/Rigset \
+            build/Rigset.app/Contents/MacOS/Rigset \
+            build/Release/Rigset.exe \
+            build/Rigset.exe; do
+            if [ -e "$f" ]; then echo "Found: $f"; FOUND=1; break; fi
+          done
+          [ "$FOUND" -eq 1 ] || { echo "Binary not found"; exit 1; }

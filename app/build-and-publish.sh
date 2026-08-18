@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
 # build-and-publish.sh — Build Rigset for the current platform, package it,
-#                        and push binaries to the site repo.
+#                        and commit binaries to this repo.
 #
-# Usage:
-#   ./build-and-publish.sh [version]
+# Usage (run from repo root):
+#   ./app/build-and-publish.sh [version]
 #
-# If no version is given, reads from CMakeLists.txt.
+# If no version is given, reads from app/CMakeLists.txt.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -euo pipefail
@@ -20,7 +20,8 @@ warn()    { echo -e "${YELLOW}${BOLD}[WARN]${RESET}  $*"; }
 die()     { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*" >&2; exit 1; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SITE_REPO="/tmp/appleinstaller-site"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SRC_DIR="$SCRIPT_DIR"
 SITE_URL="https://flickfpz.github.io/appleinstaller-site"
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
@@ -40,25 +41,24 @@ info "Platform: ${BOLD}${PLATFORM}${RESET} / ${BOLD}${ARCH}${RESET}"
 if [[ -n "${1:-}" ]]; then
     VERSION="$1"
 else
-    VERSION=$(grep -oP 'project\(Rigset VERSION \K[0-9.]+' "$SCRIPT_DIR/CMakeLists.txt" 2>/dev/null || echo "1.0.0")
+    VERSION=$(grep -oP 'project\(Rigset VERSION \K[0-9.]+' "$SRC_DIR/CMakeLists.txt" 2>/dev/null || echo "1.0.0")
 fi
 info "Version: ${BOLD}${VERSION}${RESET}"
 
 # ── Build ──────────────────────────────────────────────────────────────────────
-BUILD_DIR="$SCRIPT_DIR/build"
+BUILD_DIR="$REPO_ROOT/build"
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
 info "Configuring with CMake..."
-cmake -S "$SCRIPT_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release -G Ninja 2>&1 | tail -3
+cmake -S "$SRC_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release -G Ninja 2>&1 | tail -3
 
 info "Building ($(nproc 2>/dev/null || sysctl -n hw.logicalcpu) cores)..."
 cmake --build "$BUILD_DIR" --parallel 2>&1 | tail -5
 
 # ── Package ────────────────────────────────────────────────────────────────────
-OUTPUT_DIR="$SCRIPT_DIR/dist"
-rm -rf "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
+OUTPUT_DIR="$REPO_ROOT"
+ASSET=""
 
 if [[ "$PLATFORM" == "linux" ]]; then
     BINARY=""
@@ -67,9 +67,8 @@ if [[ "$PLATFORM" == "linux" ]]; then
     done
     [[ -n "$BINARY" ]] || die "Linux binary not found in $BUILD_DIR"
     chmod +x "$BINARY"
-    cp "$BINARY" "$OUTPUT_DIR/Rigset"
-    tar -czf "$OUTPUT_DIR/Rigset-linux-x86_64.tar.gz" -C "$OUTPUT_DIR" Rigset
-    ASSET="$OUTPUT_DIR/Rigset-linux-x86_64.tar.gz"
+    tar -czf "$OUTPUT_DIR/Rigset-linux-x86_64.tar.gz" -C "$BUILD_DIR" Rigset
+    ASSET="Rigset-linux-x86_64.tar.gz"
     success "Packaged: Rigset-linux-x86_64.tar.gz"
 
 elif [[ "$PLATFORM" == "macos" ]]; then
@@ -83,43 +82,34 @@ elif [[ "$PLATFORM" == "macos" ]]; then
     else
         cp "$BINARY" "$OUTPUT_DIR/Rigset"
         tar -czf "$OUTPUT_DIR/Rigset-macos-arm64.tar.gz" -C "$OUTPUT_DIR" Rigset
+        rm -f "$OUTPUT_DIR/Rigset"
     fi
-    ASSET="$OUTPUT_DIR/Rigset-macos-arm64.tar.gz"
+    ASSET="Rigset-macos-arm64.tar.gz"
     success "Packaged: Rigset-macos-arm64.tar.gz"
 fi
 
-# ── Push to site repo ─────────────────────────────────────────────────────────
-if [[ ! -d "$SITE_REPO/.git" ]]; then
-    info "Cloning site repo..."
-    git clone https://github.com/flickfpz/appleinstaller-site.git "$SITE_REPO"
-else
-    info "Updating site repo..."
-    git -C "$SITE_REPO" pull --ff-only --quiet || true
-fi
-
-cp "$ASSET" "$SITE_REPO/"
-
-# Update version.json
+# ── Update version.json ────────────────────────────────────────────────────────
 if command -v python3 &>/dev/null; then
     python3 -c "
-import json, sys
-with open('$SITE_REPO/version.json') as f:
+import json
+with open('$REPO_ROOT/version.json') as f:
     d = json.load(f)
 d['version'] = '$VERSION'
-with open('$SITE_REPO/version.json', 'w') as f:
+with open('$REPO_ROOT/version.json', 'w') as f:
     json.dump(d, f, indent=2)
-print(f'Updated version.json to {\"$VERSION\"}')
 "
+    info "Updated version.json to ${VERSION}"
 fi
 
-cd "$SITE_REPO"
-git add -A
+# ── Commit & push ──────────────────────────────────────────────────────────────
+cd "$REPO_ROOT"
+git add "$ASSET" version.json
 if git diff --cached --quiet; then
     info "No changes to commit."
 else
     git commit -m "Update binaries to v${VERSION} (${PLATFORM})"
     git push origin main
-    success "Pushed to site repo!"
+    success "Pushed to repo!"
 fi
 
 # ── Install locally (optional) ────────────────────────────────────────────────
@@ -127,7 +117,7 @@ echo ""
 read -rp "Install locally now? [Y/n]: " INSTALL_LOCAL
 if [[ "${INSTALL_LOCAL,,}" != "n" && "${INSTALL_LOCAL,,}" != "no" ]]; then
     INSTALL_DIR="/usr/local/bin"
-    sudo install -Dm755 "$OUTPUT_DIR/Rigset" "$INSTALL_DIR/rigset"
+    sudo install -Dm755 "$BUILD_DIR/Rigset" "$INSTALL_DIR/rigset"
     success "Installed to $INSTALL_DIR/rigset"
 fi
 

@@ -10,7 +10,7 @@ window.OsDetect = (function () {
 
   var PLATFORMS = ['Windows', 'macOS', 'Arch Linux', 'Debian/Ubuntu', 'Fedora'];
 
-  var IA_BASE = 'https://archive.org/download/app-installer-linux-x-86-64.tar';
+  var IA_BASE = 'https://flickfpz.github.io/appleinstaller-site';
 
   var INSTALLERS = {
     'Windows':        { type: 'download', url: IA_BASE + '/AppInstaller-Setup.exe' },

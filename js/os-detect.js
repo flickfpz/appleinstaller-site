@@ -37,13 +37,16 @@ window.OsDetect = (function () {
   }
 
   /**
-   * Return the installer filename for a given platform.
+   * Return the download URL for a given platform.
    *
    * @param {string} platform - One of the five supported platform names.
-   * @returns {'install.bat'|'install.sh'}
+   * @returns {string} URL to download the installer.
    */
   function installerFor(platform) {
-    return platform === 'Windows' ? 'install.bat' : 'install.sh';
+    if (platform === 'Windows') {
+      return 'https://github.com/flickfpz/appleinstaller/releases/latest/download/AppInstaller-Setup.exe';
+    }
+    return 'install.sh';
   }
 
   return { detect: detect, installerFor: installerFor, PLATFORMS: PLATFORMS };

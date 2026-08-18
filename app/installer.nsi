@@ -65,6 +65,9 @@ Section "Rigset (required)" SecMain
   File /nonfatal /r "styles"
   File /nonfatal /r "imageformats"
   File /nonfatal /r "tls"
+  File /nonfatal /r "generic"
+  File /nonfatal /r "iconengines"
+  File /nonfatal /r "networkinformation"
 
   ; ── Copy install scripts ──────────────────────────────────────────────────
   SetOutPath "$INSTDIR"
@@ -122,6 +125,9 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\styles"
   RMDir /r "$INSTDIR\imageformats"
   RMDir /r "$INSTDIR\tls"
+  RMDir /r "$INSTDIR\generic"
+  RMDir /r "$INSTDIR\iconengines"
+  RMDir /r "$INSTDIR\networkinformation"
   RMDir  "$INSTDIR"
 
   ; Remove shortcuts

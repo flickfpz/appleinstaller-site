@@ -1,0 +1,37 @@
+# Build directories
+build/
+cmake-build-*/
+
+# Qt generated
+*.moc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Compiled objects
+*.o
+*.obj
+*.exe
+*.app
+*.dmg
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Kiro
+.kiro/
+
+# CMake user settings
+CMakeUserPresets.json
+
+# Compile commands (symlink)
+compile_commands.json

@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     app.setApplicationName("Rigset");
-    app.setApplicationVersion("1.0.0");
+    app.setApplicationVersion(PROJECT_VERSION);
     app.setOrganizationName("Rigset");
 
     // Bootstrap ThemeManager — Light is the default

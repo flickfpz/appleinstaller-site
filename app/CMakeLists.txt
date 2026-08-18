@@ -48,6 +48,7 @@ target_link_libraries(Rigset PRIVATE
 )
 
 target_include_directories(Rigset PRIVATE src)
+target_compile_definitions(Rigset PRIVATE PROJECT_VERSION="${PROJECT_VERSION}")
 
 # ── Platform tweaks ───────────────────────────────────────────────────────────
 if(WIN32)

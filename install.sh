@@ -13,7 +13,8 @@
 
 set -euo pipefail
 
-REPO="flickfpz/appleinstaller"
+REPO="flickfpz/appleinstaller-site"
+SITE_BASE="https://flickfpz.github.io/appleinstaller-site"
 INSTALL_DIR="/usr/local/bin"
 APP_NAME="appinstaller"
 
@@ -54,12 +55,12 @@ info "Detected: ${BOLD}${OS}${RESET} / ${BOLD}${ARCH}${RESET}"
 
 # ── Determine download asset name ────────────────────────────────────────────
 if [[ "$OS" == "linux" ]]; then
-    ASSET="AppleInstaller-linux-${ARCH}.tar.gz"
+    ASSET="AppInstaller-linux-x86_64.tar.gz"
 elif [[ "$OS" == "macos" ]]; then
-    ASSET="AppleInstaller-macos-${ARCH}.tar.gz"
+    ASSET="AppInstaller-macos-arm64.tar.gz"
 fi
 
-DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${ASSET}"
+DOWNLOAD_URL="${SITE_BASE}/${ASSET}"
 info "Download URL: ${BOLD}${DOWNLOAD_URL}${RESET}"
 
 # ── Download ──────────────────────────────────────────────────────────────────

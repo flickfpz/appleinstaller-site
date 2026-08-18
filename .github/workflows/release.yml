@@ -85,10 +85,10 @@ jobs:
             if [ -f "$b" ]; then BINARY="$b"; break; fi
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
-          if [ -f "$WINDEPLOY" ]; then
-            "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw "$BINARY"
-          fi
           cp "$BINARY" app/Rigset.exe
+          if [ -f "$WINDEPLOY" ]; then
+            "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw app/Rigset.exe
+          fi
           export PATH="/c/Program Files (x86)/NSIS:$PATH"
           cd app && makensis installer.nsi && cd .. && mv app/rigset.exe .
 

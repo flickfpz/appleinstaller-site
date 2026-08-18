@@ -58,8 +58,13 @@ Section "Rigset (required)" SecMain
 
   SetOutPath "$INSTDIR"
 
-  ; Extract the bundled binary (embedded at compile time)
+  ; Extract the bundled binary and Qt runtime (embedded at compile time)
   File "Rigset.exe"
+  File /nonfatal "*.dll"
+  File /nonfatal /r "platforms"
+  File /nonfatal /r "styles"
+  File /nonfatal /r "imageformats"
+  File /nonfatal /r "tls"
 
   ; ── Copy install scripts ──────────────────────────────────────────────────
   SetOutPath "$INSTDIR"
@@ -109,9 +114,14 @@ Section "Uninstall"
 
   ; Remove files
   Delete "$INSTDIR\Rigset.exe"
+  Delete "$INSTDIR\*.dll"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\install.bat"
   Delete "$INSTDIR\install.sh"
+  RMDir /r "$INSTDIR\platforms"
+  RMDir /r "$INSTDIR\styles"
+  RMDir /r "$INSTDIR\imageformats"
+  RMDir /r "$INSTDIR\tls"
   RMDir  "$INSTDIR"
 
   ; Remove shortcuts

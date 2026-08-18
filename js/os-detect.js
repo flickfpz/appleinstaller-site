@@ -8,23 +8,18 @@
  */
 window.OsDetect = (function () {
 
-  /** All five supported platforms in canonical order. */
   var PLATFORMS = ['Windows', 'macOS', 'Arch Linux', 'Debian/Ubuntu', 'Fedora'];
 
-  /**
-   * Detect the OS from a user-agent string.
-   *
-   * Priority rules (first match wins):
-   *   1. Windows      — ua contains /Windows/i
-   *   2. macOS        — ua contains /Mac OS X|macOS/i
-   *   3. Fedora       — ua contains /Fedora|CentOS|RHEL/i
-   *   4. Arch Linux   — ua contains /Arch|Manjaro/i
-   *   5. Debian/Ubuntu — fallback for everything else
-   *
-   * @param {string} [ua] - Optional user-agent string. When omitted the
-   *   browser's navigator.userAgent + ' ' + navigator.platform is used.
-   * @returns {string} One of the five platform names.
-   */
+  var IA_BASE = 'https://archive.org/download/app-installer-linux-x-86-64.tar';
+
+  var INSTALLERS = {
+    'Windows':        { type: 'download', url: IA_BASE + '/AppInstaller-Setup.exe' },
+    'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-macos-arm64.tar.gz | tar -xz' },
+    'Arch Linux':     { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Debian/Ubuntu':  { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' },
+    'Fedora':         { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/AppInstaller-linux-x86_64.tar.gz | tar -xz' }
+  };
+
   function detect(ua) {
     if (ua === undefined || ua === null) {
       ua = navigator.userAgent + ' ' + navigator.platform;
@@ -36,17 +31,8 @@ window.OsDetect = (function () {
     return 'Debian/Ubuntu';
   }
 
-  /**
-   * Return the download URL for a given platform.
-   *
-   * @param {string} platform - One of the five supported platform names.
-   * @returns {string} URL to download the installer.
-   */
   function installerFor(platform) {
-    if (platform === 'Windows') {
-      return 'https://github.com/flickfpz/appleinstaller/releases/latest/download/AppInstaller-Setup.exe';
-    }
-    return 'install.sh';
+    return INSTALLERS[platform];
   }
 
   return { detect: detect, installerFor: installerFor, PLATFORMS: PLATFORMS };

@@ -179,10 +179,11 @@
           <article class="platform-entry">
             <span class="platform-icon" aria-hidden="true">🪟</span>
             <h3 class="platform-name">Windows</h3>
-            <p class="platform-detail">Windows 10 / 11 · .exe installer</p>
+            <p class="platform-detail">Windows 10 / 11 · winget</p>
             <code class="platform-script">AppInstaller-Setup.exe</code>
             <a
-              href="https://github.com/flickfpz/appleinstaller/releases/latest/download/AppInstaller-Setup.exe"
+              href="https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-Setup.exe"
+              download
               class="platform-dl"
               aria-label="Download AppInstaller-Setup.exe for Windows">
               Download
@@ -193,56 +194,52 @@
             <span class="platform-icon" aria-hidden="true">🍎</span>
             <h3 class="platform-name">macOS</h3>
             <p class="platform-detail">macOS 12+ · Homebrew</p>
-            <code class="platform-script">install.sh</code>
-            <a
-              href="install.sh"
-              download
+            <code class="platform-script">curl | tar</code>
+            <button
               class="platform-dl"
-              aria-label="Download install.sh for macOS">
-              Download
-            </a>
+              data-curl="curl -fsSL https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-macos-arm64.tar.gz | tar -xz"
+              aria-label="Show install command for macOS">
+              Install
+            </button>
           </article>
 
           <article class="platform-entry">
             <span class="platform-icon" aria-hidden="true">🐧</span>
             <h3 class="platform-name">Arch Linux</h3>
             <p class="platform-detail">Arch / Manjaro · pacman</p>
-            <code class="platform-script">install.sh</code>
-            <a
-              href="install.sh"
-              download
+            <code class="platform-script">curl | tar</code>
+            <button
               class="platform-dl"
-              aria-label="Download install.sh for Arch Linux">
-              Download
-            </a>
+              data-curl="curl -fsSL https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-linux-x86_64.tar.gz | tar -xz"
+              aria-label="Show install command for Arch Linux">
+              Install
+            </button>
           </article>
 
           <article class="platform-entry">
             <span class="platform-icon" aria-hidden="true">🐧</span>
             <h3 class="platform-name">Debian / Ubuntu</h3>
             <p class="platform-detail">Debian 11+ / Ubuntu 22.04+ · apt</p>
-            <code class="platform-script">install.sh</code>
-            <a
-              href="install.sh"
-              download
+            <code class="platform-script">curl | tar</code>
+            <button
               class="platform-dl"
-              aria-label="Download install.sh for Debian and Ubuntu">
-              Download
-            </a>
+              data-curl="curl -fsSL https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-linux-x86_64.tar.gz | tar -xz"
+              aria-label="Show install command for Debian and Ubuntu">
+              Install
+            </button>
           </article>
 
           <article class="platform-entry">
             <span class="platform-icon" aria-hidden="true">🎩</span>
             <h3 class="platform-name">Fedora</h3>
             <p class="platform-detail">Fedora 38+ · dnf</p>
-            <code class="platform-script">install.sh</code>
-            <a
-              href="install.sh"
-              download
+            <code class="platform-script">curl | tar</code>
+            <button
               class="platform-dl"
-              aria-label="Download install.sh for Fedora">
-              Download
-            </a>
+              data-curl="curl -fsSL https://archive.org/download/app-installer-linux-x-86-64.tar/AppInstaller-linux-x86_64.tar.gz | tar -xz"
+              aria-label="Show install command for Fedora">
+              Install
+            </button>
           </article>
 
         </div>
@@ -284,7 +281,7 @@
       </p>
       <nav class="footer-nav" aria-label="Footer links">
         <a
-          href="https://github.com/flickfpz/appleinstaller"
+          href="https://github.com/appleinstaller/app-installer"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="App Installer on GitHub (opens in new tab)">

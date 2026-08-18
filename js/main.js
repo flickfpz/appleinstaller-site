@@ -19,6 +19,7 @@
     // 2. Detect OS and inject download CTAs
     var platform = OsDetect.detect();
     renderCTAs(platform);
+    bindCurlButtons();
 
     // 3. Wire theme buttons
     var themeBtns = document.querySelectorAll('[data-theme-btn]');
@@ -124,10 +125,68 @@
   }
 
   function ctaButtonHTML(platform, variant) {
-    var file = OsDetect.installerFor(platform);
-    return '<a href="' + file + '" download class="cta-btn cta-' + variant + '" aria-label="Download for ' + platform + '">' +
-             'Download for ' + platform +
-           '</a>';
+    var info = OsDetect.installerFor(platform);
+    if (info.type === 'download') {
+      return '<a href="' + info.url + '" download class="cta-btn cta-' + variant + '" aria-label="Download for ' + platform + '">' +
+               'Download for ' + platform +
+             '</a>';
+    }
+    return '<button class="cta-btn cta-' + variant + '" data-curl="' + escapeAttr(info.command) + '" aria-label="Show install command for ' + platform + '">' +
+             'Install for ' + platform +
+           '</button>';
+  }
+
+  function escapeAttr(str) {
+    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function bindCurlButtons() {
+    var btns = document.querySelectorAll('[data-curl]');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function (e) {
+        var cmd = e.currentTarget.getAttribute('data-curl');
+        showCurlPanel(cmd);
+      });
+    }
+  }
+
+  function showCurlPanel(command) {
+    var existing = document.getElementById('curl-overlay');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'curl-overlay';
+    overlay.innerHTML =
+      '<div class="curl-panel">' +
+        '<div class="curl-panel-header">' +
+          '<span class="curl-panel-title">Run this command in your terminal</span>' +
+          '<button class="curl-close-btn" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="curl-command">' +
+          '<code>' + escapeHTML(command) + '</code>' +
+          '<button class="curl-copy-btn">Copy</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.curl-close-btn').addEventListener('click', function () {
+      overlay.remove();
+    });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.remove();
+    });
+    overlay.querySelector('.curl-copy-btn').addEventListener('click', function () {
+      navigator.clipboard.writeText(command).then(function () {
+        var btn = overlay.querySelector('.curl-copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+      });
+    });
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
 }());

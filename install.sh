@@ -54,9 +54,9 @@ info "Detected: ${BOLD}${OS}${RESET} / ${BOLD}${ARCH}${RESET}"
 
 # ── Determine download asset name ────────────────────────────────────────────
 if [[ "$OS" == "linux" ]]; then
-    ASSET="Rigset-linux-x86_64.tar.gz"
+    ASSET="rigset-linux-x86_64.tar.gz"
 elif [[ "$OS" == "macos" ]]; then
-    ASSET="Rigset-macos-arm64.tar.gz"
+    ASSET="rigset-macos-arm64.tar.gz"
 fi
 
 DOWNLOAD_URL="${SITE_BASE}/${ASSET}"

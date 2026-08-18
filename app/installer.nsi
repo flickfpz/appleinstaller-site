@@ -12,14 +12,14 @@
 ;   makensis installer.nsi
 ;
 ; Output:
-;   Rigset-Setup.exe (standalone installer)
+;   rigset.exe (standalone installer)
 ; ─────────────────────────────────────────────────────────────────────────────
 
 !include "MUI2.nsh"
 
 ; ── General ──────────────────────────────────────────────────────────────────
 Name "Rigset"
-OutFile "Rigset-Setup.exe"
+OutFile "rigset.exe"
 InstallDir "$LOCALAPPDATA\Rigset"
 InstallDirRegKey HKCU "Software\Rigset" "InstallDir"
 RequestExecutionLevel user
@@ -37,7 +37,7 @@ VIAddVersionKey "ProductName"     "${APP_NAME}"
 VIAddVersionKey "ProductVersion"  "${APP_VERSION}"
 VIAddVersionKey "CompanyName"     "${APP_PUBLISHER}"
 VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
-VIAddVersionKey "LegalCopyright"  "MIT License"
+VIAddVersionKey "LegalCopyright"  "Copyright (c) 2025 Rigset - MIT License"
 
 ; ── MUI Settings ─────────────────────────────────────────────────────────────
 !define MUI_ABORTWARNING
@@ -64,22 +64,6 @@ Section "Rigset (required)" SecMain
 
   ; ── Check for pre-built binary ─────────────────────────────────────────────
   ; Try multiple locations where the built binary might be
-
-  IfFileExists "build\Release\Rigset.exe" 0 +3
-    CopyFiles "build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "build\Rigset.exe" 0 +3
-    CopyFiles "build\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "..\build\Release\Rigset.exe" 0 +3
-    CopyFiles "..\build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
-
-  IfFileExists "..\build\Rigset.exe" 0 +3
-    CopyFiles "..\build\Rigset.exe" "$INSTDIR\Rigset.exe"
-    Goto binary_done
 
   IfFileExists "build\Release\Rigset.exe" 0 +3
     CopyFiles "build\Release\Rigset.exe" "$INSTDIR\Rigset.exe"

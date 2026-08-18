@@ -63,7 +63,7 @@ elseif(APPLE)
     set_target_properties(Rigset PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_NAME        "Rigset"
-        MACOSX_BUNDLE_GUI_IDENTIFIER     "com.kiro.rigset"
+        MACOSX_BUNDLE_GUI_IDENTIFIER     "com.rigset.app"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_BUNDLE_VERSION       "${PROJECT_VERSION}"
     )
@@ -111,7 +111,7 @@ endif()
 
 # ── CPack packaging ───────────────────────────────────────────────────────────
 set(CPACK_PACKAGE_NAME              "Rigset")
-set(CPACK_PACKAGE_VENDOR            "Kiro")
+set(CPACK_PACKAGE_VENDOR            "Rigset")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Install your favourite apps in one click")
 set(CPACK_PACKAGE_VERSION           "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Rigset")
@@ -132,7 +132,7 @@ elseif(UNIX)
     set(CPACK_GENERATOR "DEB;RPM;TGZ")
 
     # DEB
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Kiro <hello@kiro.dev>")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rigset")
     set(CPACK_DEBIAN_PACKAGE_SECTION    "utils")
     set(CPACK_DEBIAN_PACKAGE_DEPENDS
         "libqt6widgets6, libqt6network6, libqt6concurrent6")

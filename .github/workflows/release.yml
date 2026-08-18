@@ -75,7 +75,7 @@ jobs:
         run: cmake --build build --parallel
 
       # ── Package (Windows) ──────────────────────────────────────────────────
-      - name: Build NSIS installer (Windows)
+      - name: Package Windows binary
         if: runner.os == 'Windows'
         shell: bash
         run: |
@@ -85,19 +85,19 @@ jobs:
             if [ -f "$b" ]; then BINARY="$b"; break; fi
           done
           [ -n "$BINARY" ] || { echo "Binary not found"; exit 1; }
-          cp "$BINARY" app/Rigset.exe
+          mkdir -p rigset-windows
+          cp "$BINARY" rigset-windows/Rigset.exe
           if [ -f "$WINDEPLOY" ]; then
-            "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw app/Rigset.exe
+            "$WINDEPLOY" --release --no-translations --no-system-d3d-compiler --no-opengl-sw rigset-windows/Rigset.exe
           fi
-          export PATH="/c/Program Files (x86)/NSIS:$PATH"
-          cd app && makensis installer.nsi && cd .. && mv app/rigset.exe .
+          7z a -tzip rigset-windows-x64.zip rigset-windows/
 
-      - name: Upload Windows installer
+      - name: Upload Windows artifact
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
-          path: rigset.exe
+          name: windows-binary
+          path: rigset-windows-x64.zip
 
       # ── Package (Linux) ────────────────────────────────────────────────────
       - name: Package Linux binary
@@ -166,13 +166,13 @@ jobs:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', github.event.inputs.version) }}
           generate_release_notes: true
           files: |
-            windows-installer/rigset.exe
+            windows-binary/rigset-windows-x64.zip
             linux-binary/rigset-linux-x86_64.tar.gz
             macos-binary/rigset-macos-arm64.tar.gz
 
       - name: Update site binaries + version
         run: |
-          cp windows-installer/rigset.exe .
+          cp windows-binary/rigset-windows-x64.zip .
           cp linux-binary/rigset-linux-x86_64.tar.gz .
           cp macos-binary/rigset-macos-arm64.tar.gz .
 
@@ -192,6 +192,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add rigset.exe rigset-linux-x86_64.tar.gz rigset-macos-arm64.tar.gz version.json
+          git add rigset-windows-x64.zip rigset-linux-x86_64.tar.gz rigset-macos-arm64.tar.gz version.json
           git commit -m "Update binaries to ${{ github.ref_name || format('v{0}', github.event.inputs.version) }}"
           git push origin HEAD:main

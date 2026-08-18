@@ -14,7 +14,7 @@ window.OsDetect = (function () {
   var LINUX_CMD = 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz';
 
   var INSTALLERS = {
-    'Windows':        { type: 'download', url: 'https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset.exe' },
+    'Windows':        { type: 'download', url: 'https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset-windows-x64.zip' },
     'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-macos-arm64.tar.gz | tar -xz' },
     'Linux':          { type: 'curl',     command: LINUX_CMD }
   };

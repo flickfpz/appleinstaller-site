@@ -2,7 +2,7 @@
   "version": "1.0.1",
   "name": "Rigset",
   "download": {
-    "windows": "https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset.exe",
+    "windows": "https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset-windows-x64.zip",
     "macos": "https://flickfpz.github.io/appleinstaller-site/rigset-macos-arm64.tar.gz",
     "linux": "https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz"
   }

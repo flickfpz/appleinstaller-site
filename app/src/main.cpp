@@ -14,11 +14,13 @@ int main(int argc, char *argv[])
     app.setApplicationVersion(PROJECT_VERSION);
     app.setOrganizationName("Rigset");
 
-    // Bootstrap ThemeManager — Light is the default
-    // Calling setTheme triggers globalStyleSheet() + themeChanged()
-    // so all future widgets start with the correct palette.
-    TM().setTheme(ThemeManager::Theme::Light);
+    // Set default font immediately to suppress Qt's "QFont::fromString: Invalid
+    // description '(empty)'" warning that fires when widgets query the font
+    // before one has been explicitly set.
     app.setFont(ThemeManager::fontBody());
+
+    // Bootstrap ThemeManager — Light is the default
+    TM().setTheme(ThemeManager::Theme::Light);
 
     MainWindow window;
 

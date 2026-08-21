@@ -1,19 +1,8 @@
 /**
  * js/apps.js — App Registry
  *
- * Defines window.APP_REGISTRY: the single source of truth for all apps
- * shown in the Demo Panel and any app listing on the page.
- *
- * Each entry shape:
- *   {
- *     id:          string  — unique kebab-case identifier
- *     name:        string  — human-readable display name
- *     category:    string  — one of the defined categories
- *     description: string  — plain-text summary, max 80 characters
- *     icon:        string  — emoji for display in the Demo Panel
- *     platform:    string  — 'all' | 'windows' | 'linux' | 'mac'
- *     commands:    object  — per-platform install commands
- *   }
+ * icon field: Simple Icons CSS class (e.g. "si si-firefoxbrowser")
+ * Falls back to text initials when the font fails to load.
  */
 
 (function () {
@@ -25,7 +14,7 @@
     {
       id: 'firefox', name: 'Firefox', category: 'Browsers',
       description: 'Privacy-focused open-source browser by Mozilla',
-      icon: '🦊', platform: 'all',
+      icon: 'si si-firefoxbrowser', platform: 'all',
       commands: {
         windows: 'winget install --id Mozilla.Firefox --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask firefox',
@@ -35,7 +24,7 @@
     {
       id: 'chromium', name: 'Chromium', category: 'Browsers',
       description: 'Open-source browser project behind Google Chrome',
-      icon: '🌐', platform: 'all',
+      icon: 'iconoir-globe', platform: 'all',
       commands: {
         windows: 'winget install --id Google.Chrome --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask chromium',
@@ -45,7 +34,7 @@
     {
       id: 'brave', name: 'Brave', category: 'Browsers',
       description: 'Privacy-first browser with built-in ad and tracker blocking',
-      icon: '🦁', platform: 'all',
+      icon: 'si si-brave', platform: 'all',
       commands: {
         windows: 'winget install --id Brave.Brave --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask brave-browser',
@@ -55,7 +44,7 @@
     {
       id: 'tor-browser', name: 'Tor Browser', category: 'Browsers',
       description: 'Anonymous browsing via the Tor network',
-      icon: '🧅', platform: 'all',
+      icon: 'si si-torbrowser', platform: 'all',
       commands: {
         windows: 'winget install --id TorProject.TorBrowser --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask tor-browser',
@@ -65,7 +54,7 @@
     {
       id: 'zen-browser', name: 'Zen Browser', category: 'Browsers',
       description: 'Privacy-focused Firefox-based browser with a minimal UI',
-      icon: '🧘', platform: 'all',
+      icon: 'si si-firefoxbrowser', platform: 'all',
       commands: {
         windows: 'winget install --id ZenZenZen.ZenBrowser --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask zen-browser',
@@ -77,7 +66,7 @@
     {
       id: 'vlc', name: 'VLC', category: 'Media',
       description: 'Versatile open-source media player for all formats',
-      icon: '🎥', platform: 'all',
+      icon: 'si si-vlcmediaplayer', platform: 'all',
       commands: {
         windows: 'winget install --id VideoLAN.VLC --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask vlc',
@@ -87,7 +76,7 @@
     {
       id: 'mpv', name: 'MPV', category: 'Media',
       description: 'Lightweight, scriptable command-line media player',
-      icon: '▶️', platform: 'all',
+      icon: 'si si-mpv', platform: 'all',
       commands: {
         windows: 'winget install --id mpv.mpv --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install mpv',
@@ -97,7 +86,7 @@
     {
       id: 'spotify', name: 'Spotify', category: 'Media',
       description: 'Stream music, podcasts, and playlists from Spotify',
-      icon: '🎵', platform: 'all',
+      icon: 'si si-spotify', platform: 'all',
       commands: {
         windows: 'winget install --id Spotify.Spotify --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask spotify',
@@ -107,7 +96,7 @@
     {
       id: 'obs-studio', name: 'OBS Studio', category: 'Media',
       description: 'Free open-source software for video recording and streaming',
-      icon: '🎙️', platform: 'all',
+      icon: 'si si-obsstudio', platform: 'all',
       commands: {
         windows: 'winget install --id OBSProject.OBSStudio --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask obs',
@@ -117,7 +106,7 @@
     {
       id: 'handbrake', name: 'HandBrake', category: 'Media',
       description: 'Open-source video transcoder for converting any format',
-      icon: '🎞️', platform: 'all',
+      icon: 'iconoir-video-skip-forward', platform: 'all',
       commands: {
         windows: 'winget install --id HandBrake.HandBrake --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask handbrake',
@@ -127,7 +116,7 @@
     {
       id: 'roblox', name: 'Roblox', category: 'Media',
       description: 'Online game platform — uses Sober on Linux',
-      icon: '🎮', platform: 'all',
+      icon: 'si si-roblox', platform: 'all',
       commands: {
         windows: 'winget install --id Roblox.Roblox --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask roblox',
@@ -137,7 +126,7 @@
     {
       id: 'steam', name: 'Steam', category: 'Media',
       description: 'Valve\'s digital game distribution platform',
-      icon: '🎲', platform: 'all',
+      icon: 'si si-steam', platform: 'all',
       commands: {
         windows: 'winget install --id Valve.Steam --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask steam',
@@ -147,7 +136,7 @@
     {
       id: 'lively-wallpapers', name: 'Lively Wallpapers', category: 'Media',
       description: 'Free and open-source animated desktop wallpapers',
-      icon: '🖼️', platform: 'windows',
+      icon: 'iconoir-windows', platform: 'windows',
       commands: {
         windows: 'winget install --id rocksdanister.LivelyWallpaper --silent --accept-package-agreements --accept-source-agreements'
       }
@@ -155,7 +144,7 @@
     {
       id: 'lutris', name: 'Lutris', category: 'Media',
       description: 'Open-source gaming platform for Linux game management',
-      icon: '🕹️', platform: 'linux',
+      icon: 'si si-linux', platform: 'linux',
       commands: {
         linux: 'sudo pacman -S --noconfirm --needed lutris'
       }
@@ -165,7 +154,7 @@
     {
       id: 'vscode', name: 'VS Code', category: 'Dev Tools',
       description: 'Lightweight but powerful source code editor by Microsoft',
-      icon: '💻', platform: 'all',
+      icon: 'iconoir-code', platform: 'all',
       commands: {
         windows: 'winget install --id Microsoft.VisualStudioCode --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask visual-studio-code',
@@ -175,7 +164,7 @@
     {
       id: 'git', name: 'Git', category: 'Dev Tools',
       description: 'Distributed version control system for tracking code changes',
-      icon: '🌿', platform: 'all',
+      icon: 'si si-git', platform: 'all',
       commands: {
         windows: 'winget install --id Git.Git --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install git',
@@ -185,7 +174,7 @@
     {
       id: 'docker', name: 'Docker', category: 'Dev Tools',
       description: 'Platform for building and running containerised applications',
-      icon: '🐳', platform: 'all',
+      icon: 'si si-docker', platform: 'all',
       commands: {
         windows: 'winget install --id Docker.DockerDesktop --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask docker',
@@ -195,7 +184,7 @@
     {
       id: 'nodejs', name: 'Node.js', category: 'Dev Tools',
       description: 'JavaScript runtime built on Chrome\'s V8 engine',
-      icon: '🟩', platform: 'all',
+      icon: 'si si-nodedotjs', platform: 'all',
       commands: {
         windows: 'winget install --id OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install node',
@@ -205,7 +194,7 @@
     {
       id: 'python', name: 'Python', category: 'Dev Tools',
       description: 'General-purpose programming language, batteries included',
-      icon: '🐍', platform: 'all',
+      icon: 'si si-python', platform: 'all',
       commands: {
         windows: 'winget install --id Python.Python.3.12 --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install python',
@@ -215,7 +204,7 @@
     {
       id: 'neovim', name: 'Neovim', category: 'Dev Tools',
       description: 'Hyperextensible Vim-based text editor',
-      icon: '✏️', platform: 'all',
+      icon: 'si si-neovim', platform: 'all',
       commands: {
         windows: 'winget install --id Neovim.Neovim --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install neovim',
@@ -225,7 +214,7 @@
     {
       id: 'kiro-ide', name: 'Kiro IDE', category: 'Dev Tools',
       description: 'AI-powered IDE with spec-driven development workflows',
-      icon: '⚡', platform: 'all',
+      icon: 'si si-amazon', platform: 'all',
       commands: {
         windows: 'winget install --id Amazon.Kiro --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask kiro',
@@ -237,7 +226,7 @@
     {
       id: 'libreoffice', name: 'LibreOffice', category: 'Productivity',
       description: 'Free and open-source office suite compatible with MS Office',
-      icon: '📄', platform: 'all',
+      icon: 'si si-libreoffice', platform: 'all',
       commands: {
         windows: 'winget install --id TheDocumentFoundation.LibreOffice --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask libreoffice',
@@ -247,7 +236,7 @@
     {
       id: 'obsidian', name: 'Obsidian', category: 'Productivity',
       description: 'Markdown-based personal knowledge base and note-taking app',
-      icon: '💎', platform: 'all',
+      icon: 'si si-obsidian', platform: 'all',
       commands: {
         windows: 'winget install --id Obsidian.Obsidian --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask obsidian',
@@ -257,7 +246,7 @@
     {
       id: 'notion', name: 'Notion', category: 'Productivity',
       description: 'All-in-one workspace for notes, tasks, wikis, and databases',
-      icon: '📝', platform: 'all',
+      icon: 'si si-notion', platform: 'all',
       commands: {
         windows: 'winget install --id Notion.Notion --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask notion',
@@ -267,7 +256,7 @@
     {
       id: 'thunderbird', name: 'Thunderbird', category: 'Productivity',
       description: 'Free open-source email client by Mozilla',
-      icon: '📨', platform: 'all',
+      icon: 'si si-thunderbird', platform: 'all',
       commands: {
         windows: 'winget install --id Mozilla.Thunderbird --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask thunderbird',
@@ -277,7 +266,7 @@
     {
       id: 'revo-uninstaller', name: 'Revo Uninstaller', category: 'Productivity',
       description: 'Thorough software uninstaller with leftover file cleanup',
-      icon: '🗑️', platform: 'windows',
+      icon: 'iconoir-windows', platform: 'windows',
       commands: {
         windows: 'winget install --id VS.RevoUninstaller --silent --accept-package-agreements --accept-source-agreements'
       }
@@ -285,7 +274,7 @@
     {
       id: 'translucenttb', name: 'TranslucentTB', category: 'Productivity',
       description: 'Lightweight app for a translucent taskbar on Windows',
-      icon: '🪟', platform: 'windows',
+      icon: 'iconoir-windows', platform: 'windows',
       commands: {
         windows: 'winget install --id TranslucentTB.TranslucentTB --silent --accept-package-agreements --accept-source-agreements'
       }
@@ -293,7 +282,7 @@
     {
       id: 'rainmeter', name: 'Rainmeter', category: 'Productivity',
       description: 'Desktop customisation tool with skins and widgets',
-      icon: '🌧️', platform: 'windows',
+      icon: 'iconoir-windows', platform: 'windows',
       commands: {
         windows: 'winget install --id RainbowMetric.Rainmeter --silent --accept-package-agreements --accept-source-agreements'
       }
@@ -301,7 +290,7 @@
     {
       id: 'windhawk', name: 'Windhawk', category: 'Productivity',
       description: 'Customisation platform for Windows Explorer and apps',
-      icon: '🌬️', platform: 'windows',
+      icon: 'iconoir-windows', platform: 'windows',
       commands: {
         windows: 'winget install --id Windhawk.Windhawk --silent --accept-package-agreements --accept-source-agreements'
       }
@@ -311,7 +300,7 @@
     {
       id: 'discord', name: 'Discord', category: 'Communication',
       description: 'Voice, video, and text chat for communities and friends',
-      icon: '💬', platform: 'all',
+      icon: 'si si-discord', platform: 'all',
       commands: {
         windows: 'winget install --id Discord.Discord --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask discord',
@@ -321,7 +310,7 @@
     {
       id: 'equibop', name: 'Equibop', category: 'Communication',
       description: 'Lightweight Discord client built for Linux',
-      icon: '🫧', platform: 'linux',
+      icon: 'si si-discord', platform: 'linux',
       commands: {
         linux: 'yay -S --noconfirm equibop-bin'
       }
@@ -329,7 +318,7 @@
     {
       id: 'telegram', name: 'Telegram', category: 'Communication',
       description: 'Cloud-based instant messaging with strong privacy features',
-      icon: '✈️', platform: 'all',
+      icon: 'si si-telegram', platform: 'all',
       commands: {
         windows: 'winget install --id Telegram.TelegramDesktop --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask telegram',
@@ -339,7 +328,7 @@
     {
       id: 'signal', name: 'Signal', category: 'Communication',
       description: 'End-to-end encrypted messaging app focused on privacy',
-      icon: '🔒', platform: 'all',
+      icon: 'si si-signal', platform: 'all',
       commands: {
         windows: 'winget install --id Signal.SignalsDesktop --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask signal',
@@ -349,7 +338,7 @@
     {
       id: 'slack', name: 'Slack', category: 'Communication',
       description: 'Team messaging and collaboration platform for workplaces',
-      icon: '💼', platform: 'all',
+      icon: 'si si-slack', platform: 'all',
       commands: {
         windows: 'winget install --id SlackTechnologies.Slack --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask slack',
@@ -361,7 +350,7 @@
     {
       id: 'bitwarden', name: 'Bitwarden', category: 'Security',
       description: 'Open-source password manager with cloud sync',
-      icon: '🛡️', platform: 'all',
+      icon: 'si si-bitwarden', platform: 'all',
       commands: {
         windows: 'winget install --id Bitwarden.Bitwarden --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask bitwarden',
@@ -371,7 +360,7 @@
     {
       id: 'keepassxc', name: 'KeePassXC', category: 'Security',
       description: 'Offline cross-platform password manager, no cloud required',
-      icon: '🔑', platform: 'all',
+      icon: 'si si-keepassxc', platform: 'all',
       commands: {
         windows: 'winget install --id KeePassXCTeam.KeePassXC --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask keepassxc',
@@ -381,7 +370,7 @@
     {
       id: 'mullvad-vpn', name: 'Mullvad VPN', category: 'Security',
       description: 'Privacy-first VPN with anonymous accounts, no logs',
-      icon: '🕵️', platform: 'all',
+      icon: 'si si-mullvad', platform: 'all',
       commands: {
         windows: 'winget install --id MullvadVPN.MullvadVPN --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask mullvad-vpn',
@@ -391,7 +380,7 @@
     {
       id: 'wireguard', name: 'WireGuard', category: 'Security',
       description: 'Fast, modern, and secure VPN tunnel protocol',
-      icon: '🔐', platform: 'all',
+      icon: 'si si-wireguard', platform: 'all',
       commands: {
         windows: 'winget install --id WireGuard.WireGuard --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask wireguard',

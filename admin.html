@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.github.com https://flickfpz.github.io; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https://api.github.com https://flickfpz.github.io; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Rigset Admin</title>
 
@@ -13,53 +13,70 @@
 
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-icons-font@v14/font/simple-icons.min.css" />
 
   <script src="js/theme.js"></script>
 </head>
 <body>
 
   <!-- Password Gate -->
-  <div id="auth-gate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#0A0818;font-family:'Inter',sans-serif;">
-    <div style="background:#161230;border:1px solid #37375F;border-radius:16px;padding:2.5rem;max-width:380px;width:90%;text-align:center;">
-      <div style="font-size:2rem;margin-bottom:0.5rem;">&#x2B21;</div>
-      <h2 style="color:#EBE4FF;font-size:1.2rem;margin-bottom:0.25rem;">Rigset Admin</h2>
-      <p style="color:#9B91C8;font-size:0.85rem;margin-bottom:1.5rem;">Enter a GitHub token with repo access to continue</p>
-      <input id="auth-password" type="password" placeholder="ghp_..." style="width:100%;padding:0.65rem 1rem;border-radius:10px;border:1px solid #37375F;background:#100D24;color:#EBE4FF;font-size:0.9rem;margin-bottom:1rem;outline:none;box-sizing:border-box;" />
-      <div id="auth-error" style="color:#FF5060;font-size:0.8rem;margin-bottom:1rem;display:none;">Invalid token or network error</div>
-      <button id="auth-submit" style="width:100%;padding:0.7rem;border:none;border-radius:10px;background:#8A50FF;color:#fff;font-size:0.95rem;font-weight:600;cursor:pointer;">Unlock</button>
+  <div id="auth-gate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#0d1117;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+    <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:2rem;max-width:360px;width:90%;text-align:center;">
+      <i class="iconoir-lock" style="font-size:2rem;color:#7c8aff;margin-bottom:0.75rem;display:block;"></i>
+      <h2 style="color:#e6edf3;font-size:1.1rem;margin-bottom:0.25rem;font-weight:600;">Rigset Admin</h2>
+      <p style="color:#8b949e;font-size:0.8rem;margin-bottom:1.25rem;">Enter password to continue</p>
+      <input id="auth-password" type="password" placeholder="Password" style="width:100%;padding:0.6rem 0.85rem;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#e6edf3;font-size:0.85rem;margin-bottom:0.75rem;outline:none;box-sizing:border-box;" />
+      <div id="auth-error" style="color:#f85149;font-size:0.78rem;margin-bottom:0.75rem;display:none;"></div>
+      <button id="auth-submit" style="width:100%;padding:0.6rem;border:none;border-radius:8px;background:#7c8aff;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;">Unlock</button>
     </div>
   </div>
   <script>
   (function(){
-    var g=document.getElementById('auth-gate'),i=document.getElementById('auth-password'),
-        e=document.getElementById('auth-error'),b=document.getElementById('auth-submit');
+    var gate=document.getElementById('auth-gate'),inp=document.getElementById('auth-password'),
+        err=document.getElementById('auth-error'),btn=document.getElementById('auth-submit');
 
-    var saved= sessionStorage.getItem('gh-pat');
-    if(saved){g.style.display='none'; window.__GH_PAT=saved; return;}
+    var MAX_ATTEMPTS=5,LOCKOUT_MS=300000;
+    var AUTH_SALT='cmlnc2V0LWFkbWluLXYx';
+    var AUTH_HASH='zAnMcqqVNntH4AAG7EZC4DossV3wP+7NJKwwr8zmWso=';
+    var AUTH_ITER=100000;
 
-    async function c(){
-      var p=i.value;if(!p)return;
-      b.textContent='Validating...'; b.disabled=true;
-      try{
-        var r=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+p,'Accept':'application/vnd.github+json'}});
-        if(r.ok){
-          var u=await r.json();
-          if(u.login==='flickfpz'){
-            sessionStorage.setItem('gh-pat',p);
-            window.__GH_PAT=p;
-            g.style.display='none';
-          }else{
-            e.textContent='Token belongs to @'+u.login+', not @flickfpz'; e.style.display=''; i.value='';i.focus();
-          }
-        }else{
-          e.textContent='Invalid token (HTTP '+r.status+')'; e.style.display=''; i.value='';i.focus();
-        }
-      }catch(ex){
-        e.textContent='Network error: '+ex.message; e.style.display=''; i.value='';i.focus();
-      }
-      b.textContent='Unlock'; b.disabled=false;
+    if(sessionStorage.getItem('admin-ok')){gate.style.display='none';return;}
+
+    function getAttempts(){
+      try{var d=JSON.parse(localStorage.getItem('admin-attempts'));if(!d)return{count:0,ts:0};return d;}
+      catch(e){return{count:0,ts:0};}
     }
-    b.addEventListener('click',c);i.addEventListener('keydown',function(ev){if(ev.key==='Enter')c();});
+    function setAttempts(c){try{localStorage.setItem('admin-attempts',JSON.stringify({count:c,ts:Date.now()}));}catch(e){}}
+    function isLocked(){var a=getAttempts();return a.count>=MAX_ATTEMPTS&&(Date.now()-a.ts<LOCKOUT_MS);}
+    function remainingLockout(){var a=getAttempts();var rem=LOCKOUT_MS-(Date.now()-a.ts);return rem>0?Math.ceil(rem/1000):0;}
+
+    async function attempt(){
+      if(isLocked()){
+        err.textContent='Too many attempts. Wait '+remainingLockout()+'s.';err.style.display='';return;
+      }
+      var pw=inp.value;if(!pw)return;
+      btn.textContent='Checking...';btn.disabled=true;err.style.display='none';
+      try{
+        var enc=new TextEncoder();
+        var key=await crypto.subtle.importKey('raw',enc.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
+        var bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:(function(){var s=atob(AUTH_SALT);var b=new Uint8Array(s.length);for(var i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;})(),iterations:AUTH_ITER,hash:'SHA-256'},key,256);
+        var hash=btoa(String.fromCharCode.apply(null,new Uint8Array(bits)));
+        if(hash===AUTH_HASH){
+          sessionStorage.setItem('admin-ok','1');
+          gate.style.display='none';
+          setAttempts(0);
+        }else{
+          var a=getAttempts();setAttempts(a.count+1);
+          var left=MAX_ATTEMPTS-a.count-1;
+          err.textContent=left>0?'Wrong password. '+left+' attempts left.':'Locked out for 5 minutes.';err.style.display='';
+          inp.value='';inp.focus();
+        }
+      }catch(ex){err.textContent='Error: '+ex.message;err.style.display='';}
+      btn.textContent='Unlock';btn.disabled=false;
+    }
+    btn.addEventListener('click',attempt);
+    inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')attempt();});
   })();
   </script>
 
@@ -71,26 +88,26 @@
     <!-- ── Sidebar ────────────────────────────────────────────────── -->
     <aside class="admin-sidebar" id="admin-sidebar">
       <div class="sidebar-header">
-        <span class="sidebar-brand-icon" aria-hidden="true">&#x2B21;</span>
+        <span class="sidebar-brand-icon" aria-hidden="true"><i class="iconoir-cube"></i></span>
         <span class="sidebar-brand-text">Rigset</span>
         <span class="sidebar-brand-badge">Admin</span>
       </div>
 
       <nav class="sidebar-nav">
         <div class="sidebar-nav-item active" data-section="apps" role="button" tabindex="0">
-          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F4E6;</span>
+          <i class="sidebar-nav-icon iconoir-box-3d-center" aria-hidden="true"></i>
           Apps
         </div>
         <div class="sidebar-nav-item" data-section="themes" role="button" tabindex="0">
-          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F3A8;</span>
+          <i class="sidebar-nav-icon iconoir-palette" aria-hidden="true"></i>
           Themes
         </div>
         <div class="sidebar-nav-item" data-section="settings" role="button" tabindex="0">
-          <span class="sidebar-nav-icon" aria-hidden="true">&#x2699;&#xFE0F;</span>
+          <i class="sidebar-nav-icon iconoir-settings" aria-hidden="true"></i>
           Settings
         </div>
         <div class="sidebar-nav-item" data-section="updates" role="button" tabindex="0">
-          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F680;</span>
+          <i class="sidebar-nav-icon iconoir-refresh" aria-hidden="true"></i>
           Push Updates
         </div>
       </nav>
@@ -123,7 +140,7 @@
         <section class="admin-section active" id="section-apps">
           <div class="admin-toolbar">
             <div class="search-wrapper">
-              <span class="search-icon" aria-hidden="true">&#x1F50D;</span>
+              <span class="search-icon" aria-hidden="true"><i class="iconoir-search"></i></span>
               <input
                 type="text"
                 class="admin-search"
@@ -166,7 +183,7 @@
           </div>
 
           <div class="empty-state" id="apps-empty" style="display:none;">
-            <div class="empty-state-icon" aria-hidden="true">&#x1F50D;</div>
+            <div class="empty-state-icon" aria-hidden="true"><i class="iconoir-search"></i></div>
             <div class="empty-state-text">No apps found</div>
             <div class="empty-state-sub">Try a different search or filter</div>
           </div>
@@ -213,16 +230,16 @@
             <h3 class="settings-card-title">Export</h3>
             <p class="settings-card-desc">Download JSON files for integration with your build pipeline.</p>
             <div class="export-group">
-              <button class="btn btn-primary" id="export-version-btn">&#x1F4E5; Export version.json</button>
-              <button class="btn btn-secondary" id="export-apps-btn">&#x1F4E5; Export apps.json</button>
-              <button class="btn btn-secondary" id="export-themes-btn">&#x1F4E5; Export themes.json</button>
+              <button class="btn btn-primary" id="export-version-btn"><i class="iconoir-download"></i> Export version.json</button>
+              <button class="btn btn-secondary" id="export-apps-btn"><i class="iconoir-download"></i> Export apps.json</button>
+              <button class="btn btn-secondary" id="export-themes-btn"><i class="iconoir-download"></i> Export themes.json</button>
             </div>
           </div>
 
           <div class="settings-card">
             <h3 class="settings-card-title">Danger Zone</h3>
             <p class="settings-card-desc">Clear all admin data from localStorage and reset to defaults.</p>
-            <button class="btn btn-danger" id="reset-data-btn">&#x1F5D1;&#xFE0F; Reset All Data</button>
+            <button class="btn btn-danger" id="reset-data-btn"><i class="iconoir-trash"></i> Reset All Data</button>
           </div>
         </section>
 
@@ -262,7 +279,7 @@
               </div>
             </div>
             <div style="margin-top:1rem;">
-              <button class="btn btn-primary" id="push-update-btn">&#x1F680; Push Update</button>
+              <button class="btn btn-primary" id="push-update-btn"><i class="iconoir-refresh"></i> Push Update</button>
             </div>
             <div id="push-status" style="margin-top:0.75rem;display:none;padding:0.75rem 1rem;border-radius:10px;font-size:0.85rem;"></div>
           </div>
@@ -627,7 +644,7 @@
       for (var i = 0; i < filtered.length; i++) {
         var a = filtered[i];
         html += '<tr>' +
-          '<td class="app-table-icon">' + escapeHtml(a.icon || '') + '</td>' +
+          '<td class="app-table-icon"><i class="' + escapeHtml(a.icon || '') + '"></i></td>' +
           '<td class="app-table-name">' + escapeHtml(a.name) + '</td>' +
           '<td><span class="category-badge">' + escapeHtml(a.category) + '</span></td>' +
           '<td><span class="platform-badge">' + escapeHtml(a.platform || 'all') + '</span></td>' +
@@ -1109,7 +1126,7 @@
           statusEl.style.background = '#0A2A10';
           statusEl.style.borderColor = '#37D85F';
           statusEl.style.color = '#37D85F';
-          statusEl.innerHTML = '&#x2714; Tag v' + escapeHtml(newVersion) + ' created! ' +
+          statusEl.innerHTML = '<i class=\"iconoir-check-circle\"></i> Tag v' + escapeHtml(newVersion) + ' created! ' +
             '<a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions" target="_blank" style="color:#8A50FF;">View Actions &#x2197;</a>';
           toast('Update pushed! Workflow triggered.');
           loadReleases();

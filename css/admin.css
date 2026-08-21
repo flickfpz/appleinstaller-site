@@ -396,6 +396,11 @@ input, select, textarea {
   text-align: center;
 }
 
+.app-table-icon .si {
+  font-size: 1.35rem;
+  color: var(--text-primary, #e6edf3);
+}
+
 .app-table-name {
   font-weight: 600;
 }

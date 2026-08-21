@@ -120,7 +120,7 @@ window.DemoPanel = (function () {
           platBadge = '<span class="app-card-platform">' + escapeHtml(PLATFORM_LABELS[app.platform] || app.platform) + '</span>';
         }
         gridHtml += '<div class="app-card' + sel + '" data-demo-app="' + app.id + '" tabindex="0" role="button" aria-pressed="' + pressed + '">';
-        gridHtml += '<span class="app-card-icon" aria-hidden="true">' + app.icon + '</span>';
+        gridHtml += '<span class="app-card-icon" aria-hidden="true"><i class="' + escapeHtml(app.icon) + '"></i></span>';
         gridHtml += '<span class="app-card-name">' + escapeHtml(app.name) + '</span>';
         gridHtml += '<span class="app-card-desc">' + escapeHtml(app.description) + '</span>';
         gridHtml += platBadge;

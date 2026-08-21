@@ -414,6 +414,12 @@ section {
 .app-card-icon {
   font-size: 1.35rem;
   line-height: 1;
+  color: var(--text-primary);
+}
+
+.app-card-icon .si {
+  font-size: 1.35rem;
+  color: var(--text-primary);
 }
 
 .app-card-name {

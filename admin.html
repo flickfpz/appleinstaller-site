@@ -256,6 +256,16 @@
             <h3 class="settings-card-title">Push New Version</h3>
             <p class="settings-card-desc">Update version.json on GitHub and trigger a new release build. Requires a PAT with repo access.</p>
             <div class="settings-row">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label" for="push-pat">GitHub Personal Access Token</label>
+                <div style="display:flex;gap:0.5rem;align-items:center;">
+                  <input type="password" class="form-input" id="push-pat" placeholder="ghp_xxxxxxxxxxxx" style="flex:1;" />
+                  <button class="btn" id="push-pat-save" style="white-space:nowrap;"><i class="iconoir-check"></i> Save</button>
+                </div>
+                <span id="push-pat-status" style="font-size:0.75rem;margin-top:0.25rem;display:block;"></span>
+              </div>
+            </div>
+            <div class="settings-row">
               <div class="form-group">
                 <label class="form-label" for="push-version">New Version</label>
                 <input type="text" class="form-input" id="push-version" placeholder="e.g. 1.1.0" />
@@ -1065,6 +1075,33 @@
         })
         .catch(function(err) { el.style.color = '#FF5060'; el.textContent = 'Failed to load: ' + err.message; });
     }
+
+    /* ── PAT management ──────────────────────────────────────────── */
+
+    var patInput = document.getElementById('push-pat');
+    var patStatus = document.getElementById('push-pat-status');
+
+    function restorePat() {
+      var saved = sessionStorage.getItem('gh-pat');
+      if (saved) {
+        patInput.value = saved;
+        patStatus.textContent = 'Token saved for this session.';
+        patStatus.style.color = '#37D85F';
+      }
+    }
+
+    document.getElementById('push-pat-save').addEventListener('click', function () {
+      var val = patInput.value.trim();
+      if (!val) { patStatus.textContent = 'Enter a token first.'; patStatus.style.color = '#FF5060'; return; }
+      sessionStorage.setItem('gh-pat', val);
+      patStatus.textContent = 'Token saved for this session.';
+      patStatus.style.color = '#37D85F';
+      toast('PAT saved.');
+      loadLiveVersion();
+      loadReleases();
+    });
+
+    restorePat();
 
     document.getElementById('push-update-btn').addEventListener('click', function () {
       var statusEl = document.getElementById('push-status');

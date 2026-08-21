@@ -174,6 +174,7 @@ header#navbar nav {
 .theme-dot--midnight { background: #0d1117; border: 1px solid #30363d; }
 .theme-dot--dark     { background: #333; }
 .theme-dot--light    { background: #d0d7de; }
+.theme-dot--true-black { background: #000000; border: 1px solid #333; }
 
 /* ── Mobile Menu ──────────────────────────────────────────────── */
 

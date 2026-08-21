@@ -61,6 +61,22 @@ window.ThemeSwitcher = (function () {
       '--hero-grad-a':    '#F2F2F7',
       '--hero-grad-b':    '#EAE4FF',
       '--hero-grad-c':    '#F8F5FF'
+    },
+    'true-black': {
+      '--bg':             '#000000',
+      '--surface':        '#0A0A0A',
+      '--surface-alt':    '#111111',
+      '--border':         '#1A1A1A',
+      '--accent':         '#8A50FF',
+      '--accent-hover':   '#A069FF',
+      '--accent-text':    '#FFFFFF',
+      '--text-primary':   '#F0F0F0',
+      '--text-secondary': '#808080',
+      '--glass-bg':       'rgba(0,0,0,0.9)',
+      '--glass-border':   'rgba(40,40,40,0.9)',
+      '--hero-grad-a':    '#000000',
+      '--hero-grad-b':    '#050510',
+      '--hero-grad-c':    '#000000'
     }
   };
 

@@ -3,28 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://flickfpz.github.io;" />
-  <meta name="description" content="Rigset — one script to install 38 apps on Windows, macOS, and Linux. Ninite-style batch installation with a clean, native UI." />
-  <title>Rigset — Install Everything. Once.</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://flickfpz.github.io;" />
+  <meta name="description" content="Rigset — one script to install 38 apps on Windows, macOS, and Linux." />
+  <title>Rigset</title>
 
-  <!-- Inter font (single CDN embed, no @import) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Stylesheet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css" />
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- Theme switcher (loaded early in <head> to prevent flash-of-wrong-theme) -->
   <script src="js/theme.js"></script>
 </head>
 <body>
 
-  <!-- ① Navigation ─────────────────────────────────────────────────────── -->
+  <!-- Nav ─────────────────────────────────────────────────────────── -->
   <header id="navbar" role="banner">
     <nav aria-label="Main navigation">
-      <a class="nav-brand" href="#hero" aria-label="Rigset — go to top">
-        <span class="nav-brand-icon" aria-hidden="true">⬡</span>
+      <a class="nav-brand" href="#hero">
+        <i class="iconoir-cube" style="color:var(--accent);margin-right:0.25rem"></i>
         Rigset
       </a>
 
@@ -35,45 +29,27 @@
         <li><a href="#download">Download</a></li>
       </ul>
 
-      <!-- Theme switcher -->
-      <div id="theme-switcher" role="group" aria-label="Choose colour theme">
-        <button
-          class="theme-btn"
-          data-theme-btn="midnight"
-          aria-label="Midnight theme — deep violet"
-          title="Midnight">
-          <span class="theme-dot theme-dot--midnight" aria-hidden="true"></span>
+      <div id="theme-switcher" role="group" aria-label="Colour theme">
+        <button class="theme-btn" data-theme-btn="midnight" title="Midnight">
+          <span class="theme-dot theme-dot--midnight"></span>
         </button>
-        <button
-          class="theme-btn"
-          data-theme-btn="dark"
-          aria-label="Dark theme — neutral dark"
-          title="Dark">
-          <span class="theme-dot theme-dot--dark" aria-hidden="true"></span>
+        <button class="theme-btn" data-theme-btn="dark" title="Dark">
+          <span class="theme-dot theme-dot--dark"></span>
         </button>
-        <button
-          class="theme-btn"
-          data-theme-btn="light"
-          aria-label="Light theme — light mode"
-          title="Light">
-          <span class="theme-dot theme-dot--light" aria-hidden="true"></span>
+        <button class="theme-btn" data-theme-btn="light" title="Light">
+          <span class="theme-dot theme-dot--light"></span>
         </button>
       </div>
 
-      <!-- Mobile menu toggle -->
-      <button
-        class="nav-menu-toggle"
-        id="nav-menu-toggle"
-        aria-label="Toggle navigation menu"
-        aria-expanded="false"
+      <button class="nav-menu-toggle" id="nav-menu-toggle"
+        aria-label="Toggle menu" aria-expanded="false"
         aria-controls="nav-links-mobile">
-        <span class="hamburger-line" aria-hidden="true"></span>
-        <span class="hamburger-line" aria-hidden="true"></span>
-        <span class="hamburger-line" aria-hidden="true"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
       </button>
     </nav>
 
-    <!-- Mobile nav drawer -->
     <div id="nav-links-mobile" class="nav-mobile" hidden>
       <ul role="list">
         <li><a href="#demo">Demo</a></li>
@@ -86,224 +62,207 @@
 
   <main id="main-content">
 
-    <!-- ② Hero ─────────────────────────────────────────────────────────── -->
-    <section id="hero" aria-label="Hero — Rigset introduction">
-      <div class="hero-bg" aria-hidden="true"></div>
+    <!-- Hero ───────────────────────────────────────────────────────── -->
+    <section id="hero" aria-label="Hero">
       <div class="hero-content">
-        <div class="hero-badge" aria-label="Status: open source and free">
-          <span aria-hidden="true">★</span> Open Source &amp; Free
-        </div>
-        <h1 class="hero-title">Install Everything.<br />Once.</h1>
+        <h1 class="hero-title">Rigset</h1>
         <p class="hero-tagline">
-          One script. 38 apps. Windows, macOS &amp; Linux.
+          One script. 38 apps. Works on Windows, macOS, and Linux.<br>
+          Pick what you need and install everything at once.
         </p>
-        <!-- Primary CTA injected here by os-detect.js + main.js -->
-        <div id="primary-cta-container" aria-live="polite" aria-label="Primary download button"></div>
+        <div id="primary-cta-container" aria-live="polite"></div>
         <p class="hero-note">
-          Supports Windows · macOS · Arch Linux · Debian/Ubuntu · Fedora
+          Supports Windows 10/11, macOS 12+, Arch, Manjaro, CachyOS, Debian, Ubuntu, Fedora
         </p>
-      </div>
-      <div class="hero-scroll-hint" aria-hidden="true">
-        <span class="scroll-arrow">↓</span>
       </div>
     </section>
 
-    <!-- ③ Demo ──────────────────────────────────────────────────────────── -->
-    <section id="demo" aria-label="Interactive demo — try Rigset live">
+    <!-- Demo ────────────────────────────────────────────────────────── -->
+    <section id="demo" aria-label="Try it live">
       <div class="section-inner">
-        <div class="section-label" aria-hidden="true">Live Preview</div>
-        <h2 class="section-title">Try It Live</h2>
+        <h2 class="section-title">Pick your apps</h2>
         <p class="section-subtitle">
-          Click apps to select them, then generate your personalised install script — no download required.
+          Select the apps you want, generate the script, run it. No installer needed.
         </p>
-        <!-- Demo Panel injected here by demo.js -->
         <div id="demo-panel" role="region" aria-label="App selection demo"></div>
       </div>
     </section>
 
-    <!-- ④ Features ──────────────────────────────────────────────────────── -->
-    <section id="features" aria-label="Feature highlights">
+    <!-- Features ────────────────────────────────────────────────────── -->
+    <section id="features" aria-label="Features">
       <div class="section-inner">
-        <div class="section-label" aria-hidden="true">Why Us</div>
-        <h2 class="section-title">Why Rigset?</h2>
-        <p class="section-subtitle">
-          Everything you need to set up a new machine, in one place.
-        </p>
-        <div class="feature-grid">
+        <h2 class="section-title">What it does</h2>
+        <div class="feature-list">
 
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">🌐</div>
-            <h3 class="feature-title">Works on Every Platform</h3>
-            <p class="feature-desc">
-              Windows, macOS, Arch, Debian, and Fedora. One installer for every system you use.
-            </p>
-          </article>
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-globe"></i></span>
+            <div class="feature-text">
+              Cross-platform
+              <span> — Windows, macOS, and Linux with one tool</span>
+            </div>
+          </div>
 
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">⚡</div>
-            <h3 class="feature-title">Batch Install in Seconds</h3>
-            <p class="feature-desc">
-              Select dozens of apps and install them all with a single command. No clicking through wizards.
-            </p>
-          </article>
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-download-square"></i></span>
+            <div class="feature-text">
+              Batch install
+              <span> — select dozens of apps and install them all at once</span>
+            </div>
+          </div>
 
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">🔓</div>
-            <h3 class="feature-title">Free and Open Source</h3>
-            <p class="feature-desc">
-              MIT-licensed, fully auditable, community-driven. Zero telemetry, zero tracking.
-            </p>
-          </article>
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-shield"></i></span>
+            <div class="feature-text">
+              Open source
+              <span> — MIT licensed, no telemetry, no tracking</span>
+            </div>
+          </div>
 
-          <article class="feature-card">
-            <div class="feature-icon" aria-hidden="true">🍎</div>
-            <h3 class="feature-title">Clean Native UI</h3>
-            <p class="feature-desc">
-              A desktop app that feels native and polished on every platform. Minimal, fast, and beautiful.
-            </p>
-          </article>
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-mac-os-window"></i></span>
+            <div class="feature-text">
+              Native feel
+              <span> — lightweight Qt desktop app that fits your OS</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-refresh"></i></span>
+            <div class="feature-text">
+              Auto-updates
+              <span> — downloads and installs new versions from inside the app</span>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <span class="feature-marker"><i class="iconoir-lock"></i></span>
+            <div class="feature-text">
+              Private
+              <span> — nothing is collected, sent, or sold. ever.</span>
+            </div>
+          </div>
 
         </div>
       </div>
     </section>
 
-    <!-- ⑤ Platforms ─────────────────────────────────────────────────────── -->
+    <!-- Platforms ───────────────────────────────────────────────────── -->
     <section id="platforms" aria-label="Supported platforms">
       <div class="section-inner">
-        <div class="section-label" aria-hidden="true">Compatibility</div>
-        <h2 class="section-title">Works Everywhere</h2>
+        <h2 class="section-title">Install on your OS</h2>
         <p class="section-subtitle">
-          Native package-manager integration on every supported OS.
+          Native package manager on every platform.
         </p>
-        <div class="platform-grid">
+        <div class="platform-list">
 
-          <article class="platform-entry">
-            <span class="platform-icon" aria-hidden="true">🪟</span>
-            <h3 class="platform-name">Windows</h3>
-            <p class="platform-detail">Windows 10 / 11 · winget</p>
-            <code class="platform-script">rigset-windows-x64.zip</code>
-            <a
-              href="https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset-windows-x64.zip"
-              class="platform-dl"
-              aria-label="Download rigset-windows-x64.zip for Windows">
-              Download
-            </a>
+          <article class="platform-item">
+            <div>
+              <span class="platform-label"><i class="iconoir-windows"></i> Windows</span>
+              <span class="platform-detail"> — Windows 10 / 11, winget</span>
+            </div>
+            <div class="platform-actions">
+              <code class="platform-script">rigset-windows-x64.zip</code>
+              <a href="https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset-windows-x64.zip"
+                class="platform-dl"
+                aria-label="Download for Windows">
+                <i class="iconoir-download"></i> Download
+              </a>
+            </div>
           </article>
 
-          <article class="platform-entry">
-            <span class="platform-icon" aria-hidden="true">🍎</span>
-            <h3 class="platform-name">macOS</h3>
-            <p class="platform-detail">macOS 12+ · Homebrew</p>
-            <code class="platform-script">curl | tar</code>
-            <button
-              class="platform-dl"
-              data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-macos-arm64.tar.gz | tar -xz"
-              aria-label="Show install command for macOS">
-              Install
-            </button>
+          <article class="platform-item">
+            <div>
+              <span class="platform-label"><i class="iconoir-apple"></i> macOS</span>
+              <span class="platform-detail"> — macOS 12+, Homebrew</span>
+            </div>
+            <div class="platform-actions">
+              <code class="platform-script">curl | tar</code>
+              <button class="platform-dl"
+                data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-macos-arm64.tar.gz | tar -xz"
+                aria-label="Install on macOS">
+                <i class="iconoir-download"></i> Install
+              </button>
+            </div>
           </article>
 
-          <article class="platform-entry">
-            <span class="platform-icon" aria-hidden="true">🐧</span>
-            <h3 class="platform-name">Arch Linux</h3>
-            <p class="platform-detail">Arch / Manjaro / CachyOS · pacman</p>
-            <code class="platform-script">curl | tar</code>
-            <button
-              class="platform-dl"
-              data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
-              aria-label="Show install command for Arch Linux">
-              Install
-            </button>
+          <article class="platform-item">
+            <div>
+              <span class="platform-label"><i class="iconoir-linux"></i> Arch Linux</span>
+              <span class="platform-detail"> — Arch, Manjaro, CachyOS, pacman</span>
+            </div>
+            <div class="platform-actions">
+              <code class="platform-script">curl | tar</code>
+              <button class="platform-dl"
+                data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
+                aria-label="Install on Arch Linux">
+                <i class="iconoir-download"></i> Install
+              </button>
+            </div>
           </article>
 
-          <article class="platform-entry">
-            <span class="platform-icon" aria-hidden="true">🐧</span>
-            <h3 class="platform-name">Debian / Ubuntu</h3>
-            <p class="platform-detail">Debian 11+ / Ubuntu 22.04+ · apt</p>
-            <code class="platform-script">curl | tar</code>
-            <button
-              class="platform-dl"
-              data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
-              aria-label="Show install command for Debian and Ubuntu">
-              Install
-            </button>
+          <article class="platform-item">
+            <div>
+              <span class="platform-label"><i class="iconoir-linux"></i> Debian / Ubuntu</span>
+              <span class="platform-detail"> — Debian 11+, Ubuntu 22.04+, apt</span>
+            </div>
+            <div class="platform-actions">
+              <code class="platform-script">curl | tar</code>
+              <button class="platform-dl"
+                data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
+                aria-label="Install on Debian or Ubuntu">
+                <i class="iconoir-download"></i> Install
+              </button>
+            </div>
           </article>
 
-          <article class="platform-entry">
-            <span class="platform-icon" aria-hidden="true">🎩</span>
-            <h3 class="platform-name">Fedora</h3>
-            <p class="platform-detail">Fedora 38+ · dnf</p>
-            <code class="platform-script">curl | tar</code>
-            <button
-              class="platform-dl"
-              data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
-              aria-label="Show install command for Fedora">
-              Install
-            </button>
+          <article class="platform-item">
+            <div>
+              <span class="platform-label"><i class="iconoir-linux"></i> Fedora</span>
+              <span class="platform-detail"> — Fedora 38+, dnf</span>
+            </div>
+            <div class="platform-actions">
+              <code class="platform-script">curl | tar</code>
+              <button class="platform-dl"
+                data-curl="curl -fsSL https://flickfpz.github.io/appleinstaller-site/rigset-linux-x86_64.tar.gz | tar -xz"
+                aria-label="Install on Fedora">
+                <i class="iconoir-download"></i> Install
+              </button>
+            </div>
           </article>
 
         </div>
       </div>
     </section>
 
-    <!-- ⑥ Download ───────────────────────────────────────────────────────── -->
-    <section id="download" aria-label="Download Rigset">
+    <!-- Download ────────────────────────────────────────────────────── -->
+    <section id="download" aria-label="Download">
       <div class="section-inner">
-        <div class="section-label" aria-hidden="true">Get Started</div>
-        <h2 class="section-title">Download Now</h2>
+        <h2 class="section-title">Download</h2>
         <p class="section-subtitle">
-          Choose your platform and run the installer script — you'll be up and running in minutes.
+          Pick your platform, run the installer. You're set in a few minutes.
         </p>
-        <!-- All platform CTAs injected here by main.js -->
-        <div
-          id="download-ctas"
-          role="group"
-          aria-label="Download options for all platforms"
-          aria-live="polite">
-        </div>
+        <div id="download-ctas" role="group" aria-label="Download options" aria-live="polite"></div>
         <p class="download-note">
-          The installer requires an internet connection to fetch packages via your system's package manager.
+          Requires an internet connection — packages are fetched through your system's package manager.
         </p>
       </div>
     </section>
 
   </main>
 
-  <!-- Footer ───────────────────────────────────────────────────────────── -->
+  <!-- Footer ───────────────────────────────────────────────────────── -->
   <footer role="contentinfo">
     <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="footer-brand-icon" aria-hidden="true">⬡</span>
-        <span class="footer-brand-name">Rigset</span>
-      </div>
-      <p class="footer-copy">
-        &copy; 2025 Rigset &middot; MIT License
-      </p>
+      <p class="footer-copy">&copy; 2025 Rigset &middot; MIT License</p>
       <nav class="footer-nav" aria-label="Footer links">
-        <a
-          href="https://github.com/flickfpz/appleinstaller"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Rigset on GitHub (opens in new tab)">
-          GitHub
+        <a href="https://github.com/flickfpz/appleinstaller-site" target="_blank" rel="noopener noreferrer">
+          <i class="iconoir-github"></i> GitHub
         </a>
-        <a href="#hero" aria-label="Back to top of page">Back to top</a>
+        <a href="#hero">Back to top</a>
       </nav>
     </div>
   </footer>
 
-  <!-- Scripts — load order matters ──────────────────────────────────────
-       Note: theme.js is loaded in <head> (before closing </head>) so
-       ThemeSwitcher.init() runs before first paint, preventing FOUC.
-       1. GSAP core     (CDN)
-       2. ScrollTrigger (CDN)
-       3. apps.js       (defines window.APP_REGISTRY)
-       4. os-detect.js  (defines window.OsDetect)
-       5. demo.js       (defines window.DemoPanel)
-       6. main.js       (orchestrator — defer so DOM is ready)
-  ─────────────────────────────────────────────────────────────────────── -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="js/apps.js"></script>
   <script src="js/os-detect.js"></script>
   <script src="js/demo.js"></script>

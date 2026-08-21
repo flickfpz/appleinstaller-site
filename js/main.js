@@ -1,27 +1,25 @@
 /**
  * js/main.js — Orchestrator
  *
- * Wires all modules together, injects dynamic HTML (CTAs), builds GSAP
- * animations, and handles navigation behaviour.
- *
- * Loaded with `defer` so the DOM is ready when this runs.
+ * Wires modules together, injects CTAs, handles navigation.
+ * No animations, no GSAP.
  */
 (function () {
   'use strict';
 
   document.addEventListener('DOMContentLoaded', function () {
 
-    // 1. Init Demo Panel
+    // Init Demo Panel
     if (typeof DemoPanel !== 'undefined') {
       DemoPanel.init();
     }
 
-    // 2. Detect OS and inject download CTAs
+    // Detect OS and inject download CTAs
     var platform = OsDetect.detect();
     renderCTAs(platform);
     bindCurlButtons();
 
-    // 3. Wire theme buttons
+    // Wire theme buttons
     var themeBtns = document.querySelectorAll('[data-theme-btn]');
     for (var i = 0; i < themeBtns.length; i++) {
       themeBtns[i].addEventListener('click', function (e) {
@@ -29,17 +27,9 @@
       });
     }
 
-    // 4. Navbar scroll effect
-    var navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 80) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-    }, { passive: true });
+    // Navbar — no scroll effect needed, solid background
 
-    // 5. Smooth-scroll nav links (desktop + mobile)
+    // Smooth-scroll nav links
     var allLinks = document.querySelectorAll('a[href^="#"]');
     for (var j = 0; j < allLinks.length; j++) {
       allLinks[j].addEventListener('click', function (e) {
@@ -60,7 +50,7 @@
       });
     }
 
-    // 6. Mobile hamburger toggle
+    // Mobile hamburger toggle
     var menuToggle = document.getElementById('nav-menu-toggle');
     var mobileNav = document.getElementById('nav-links-mobile');
     if (menuToggle && mobileNav) {
@@ -71,49 +61,18 @@
       });
     }
 
-    // 7. GSAP Hero timeline (≤ 1.2s total)
-    if (typeof gsap !== 'undefined') {
-      var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      tl.from('.hero-badge',      { y: 20, opacity: 0, duration: 0.4 })
-        .from('.hero-title',      { y: 40, opacity: 0, duration: 0.6 }, '-=0.15')
-        .from('.hero-tagline',    { y: 30, opacity: 0, duration: 0.5 }, '-=0.2')
-        .from('#primary-cta-container', { y: 20, opacity: 0, duration: 0.4 }, '-=0.2')
-        .from('.hero-note',       { y: 15, opacity: 0, duration: 0.35 }, '-=0.15');
-
-      // 8. GSAP ScrollTrigger — feature cards (stagger ≤ 100ms)
-      if (typeof ScrollTrigger !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-        gsap.from('.feature-card', {
-          scrollTrigger: { trigger: '#features', start: 'top 80%' },
-          y: 40, opacity: 0,
-          duration: 0.55,
-          stagger: 0.09
-        });
-
-        // Platform entries
-        gsap.from('.platform-entry', {
-          scrollTrigger: { trigger: '#platforms', start: 'top 80%' },
-          y: 30, opacity: 0,
-          duration: 0.5,
-          stagger: 0.08
-        });
-      }
-    }
-
   });
 
-  // ── CTA rendering ────────────────────────────────────────────────
+  // ── CTA rendering ──────────────────────────────────────────────
 
   function renderCTAs(detectedPlatform) {
     var others = OsDetect.PLATFORMS.filter(function (p) { return p !== detectedPlatform; });
 
-    // Primary CTA in hero
     var heroContainer = document.getElementById('primary-cta-container');
     if (heroContainer) {
       heroContainer.innerHTML = ctaButtonHTML(detectedPlatform, 'primary');
     }
 
-    // All CTAs in download section
     var container = document.getElementById('download-ctas');
     if (container) {
       var html = ctaButtonHTML(detectedPlatform, 'primary');
@@ -127,12 +86,12 @@
   function ctaButtonHTML(platform, variant) {
     var info = OsDetect.installerFor(platform);
     if (info.type === 'download') {
-      return '<a href="' + info.url + '" download class="cta-btn cta-' + variant + '" aria-label="Download for ' + platform + '">' +
-               'Download for ' + platform +
+      return '<a href="' + info.url + '" download class="cta-btn cta-' + variant + '">' +
+               '<i class="iconoir-download"></i>&nbsp;Download for ' + platform +
              '</a>';
     }
-    return '<button class="cta-btn cta-' + variant + '" data-curl="' + escapeAttr(info.command) + '" aria-label="Show install command for ' + platform + '">' +
-             'Install for ' + platform +
+    return '<button class="cta-btn cta-' + variant + '" data-curl="' + escapeAttr(info.command) + '">' +
+             '<i class="iconoir-download"></i>&nbsp;Install for ' + platform +
            '</button>';
   }
 
@@ -159,12 +118,12 @@
     overlay.innerHTML =
       '<div class="curl-panel">' +
         '<div class="curl-panel-header">' +
-          '<span class="curl-panel-title">Run this command in your terminal</span>' +
-          '<button class="curl-close-btn" aria-label="Close">&times;</button>' +
+          '<span class="curl-panel-title">Run this in your terminal</span>' +
+          '<button class="curl-close-btn" aria-label="Close"><i class="iconoir-xmark"></i></button>' +
         '</div>' +
         '<div class="curl-command">' +
           '<code>' + escapeHTML(command) + '</code>' +
-          '<button class="curl-copy-btn">Copy</button>' +
+          '<button class="curl-copy-btn"><i class="iconoir-copy"></i> Copy</button>' +
         '</div>' +
       '</div>';
 
@@ -179,8 +138,8 @@
     overlay.querySelector('.curl-copy-btn').addEventListener('click', function () {
       navigator.clipboard.writeText(command).then(function () {
         var btn = overlay.querySelector('.curl-copy-btn');
-        btn.textContent = 'Copied!';
-        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+        btn.innerHTML = '<i class="iconoir-check"></i> Copied!';
+        setTimeout(function () { btn.innerHTML = '<i class="iconoir-copy"></i> Copy'; }, 1500);
       });
     });
   }

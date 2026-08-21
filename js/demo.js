@@ -124,7 +124,7 @@ window.DemoPanel = (function () {
         gridHtml += '<span class="app-card-name">' + escapeHtml(app.name) + '</span>';
         gridHtml += '<span class="app-card-desc">' + escapeHtml(app.description) + '</span>';
         gridHtml += platBadge;
-        gridHtml += '<span class="app-card-check" aria-hidden="true">✓ Selected</span>';
+        gridHtml += '<span class="app-card-check" aria-hidden="true"><i class="iconoir-check"></i> Selected</span>';
         gridHtml += '</div>';
       }
       gridHtml += '</div>';
@@ -133,14 +133,14 @@ window.DemoPanel = (function () {
     // Generate button
     var genHtml = '';
     if (count > 0) {
-      genHtml = '<button class="demo-generate-btn" data-demo-generate>\u26A1 Get Installer Script</button>';
+      genHtml = '<button class="demo-generate-btn" data-demo-generate><i class="iconoir-download"></i> Get Installer Script</button>';
     }
 
     // Command output
     var cmdHtml = '';
     if (state.commandVisible && count > 0) {
       var cmd = generateCommand();
-      cmdHtml = '<div class="demo-command"><code>' + escapeHtml(cmd) + '</code><button class="demo-copy-btn" data-demo-copy>Copy</button></div>';
+      cmdHtml = '<div class="demo-command"><code>' + escapeHtml(cmd) + '</code><button class="demo-copy-btn" data-demo-copy><i class="iconoir-copy"></i> Copy</button></div>';
     }
 
     return headerHtml + gridHtml + genHtml + cmdHtml;
@@ -189,8 +189,8 @@ window.DemoPanel = (function () {
         var cmd = generateCommand();
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(cmd).then(function () {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1500);
+            copyBtn.innerHTML = '<i class="iconoir-check"></i> Copied!';
+            setTimeout(function () { copyBtn.innerHTML = '<i class="iconoir-copy"></i> Copy'; }, 1500);
           });
         } else {
           var ta = document.createElement('textarea');
@@ -201,8 +201,8 @@ window.DemoPanel = (function () {
           ta.select();
           document.execCommand('copy');
           document.body.removeChild(ta);
-          copyBtn.textContent = 'Copied!';
-          setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1500);
+          copyBtn.innerHTML = '<i class="iconoir-check"></i> Copied!';
+          setTimeout(function () { copyBtn.innerHTML = '<i class="iconoir-copy"></i> Copy'; }, 1500);
         }
       });
     }

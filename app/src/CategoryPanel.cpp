@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QLinearGradient>
+#include <QApplication>
 
 CategoryPanel::CategoryPanel(const QStringList &categories, QWidget *parent)
     : QWidget(parent)
@@ -38,6 +39,13 @@ CategoryPanel::CategoryPanel(const QStringList &categories, QWidget *parent)
         addRow(cat, cat);
 
     m_layout->addStretch();
+
+    m_versionLabel = new QLabel(
+        QStringLiteral("v%1").arg(QApplication::applicationVersion()), this);
+    m_versionLabel->setFont(ThemeManager::fontCaption());
+    m_versionLabel->setAlignment(Qt::AlignCenter);
+    m_versionLabel->setContentsMargins(0, 0, 0, 4);
+    m_layout->addWidget(m_versionLabel);
 
     if (!m_rows.isEmpty())
         m_rows.first().btn->setChecked(true);
@@ -110,6 +118,10 @@ void CategoryPanel::applyTheme()
     QPalette hp = m_header->palette();
     hp.setColor(QPalette::WindowText, TM().textTertiary());
     m_header->setPalette(hp);
+
+    QPalette vp = m_versionLabel->palette();
+    vp.setColor(QPalette::WindowText, TM().textTertiary());
+    m_versionLabel->setPalette(vp);
 
     for (int i = 0; i < m_layout->count(); ++i) {
         auto *w = m_layout->itemAt(i)->widget();

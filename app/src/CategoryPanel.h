@@ -34,4 +34,5 @@ private:
     QButtonGroup  *m_group     = nullptr;
     QVector<Row>   m_rows;
     QLabel        *m_header    = nullptr;
+    QLabel        *m_versionLabel = nullptr;
 };

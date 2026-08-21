@@ -46,8 +46,8 @@ private:
     bool    m_available    = true;    // false = unavailable on current OS
     qreal   m_hoverOpacity = 0.0;
     qreal   m_pressScale   = 1.0;
+    QPixmap m_logoPixmap;
 
-    QLabel *m_iconLabel  = nullptr;
     QLabel *m_nameLabel  = nullptr;
     QLabel *m_descLabel  = nullptr;
     QLabel *m_verLabel   = nullptr;

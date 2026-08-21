@@ -17,6 +17,7 @@ struct AppData {
     QString description;
     QString category;
     QString iconName;
+    QString iconPath;
     QString version;
 
     QMap<OsDetect::OS, OsCmd> cmds;
@@ -45,6 +46,7 @@ inline AppData makeApp(
     AppData a;
     a.id = id; a.name = name; a.description = desc;
     a.category = category; a.version = ver;
+    a.iconPath = QStringLiteral(":/icons/%1.svg").arg(id);
 
     if (!win.isEmpty()) {
         OsCmd c; c.program = "winget";
@@ -160,6 +162,7 @@ inline QVector<AppData> defaultCatalogue()
     {
         AppData a; a.id = "claude-code"; a.name = "Claude Code";
         a.description = "AI pair programmer by Anthropic"; a.category = "AI Tools"; a.version = "latest";
+        a.iconPath = ":/icons/claude.svg";
         { OsCmd c; c.program = "winget"; c.args = {"install","--silent","--accept-package-agreements","--accept-source-agreements","Anthropic.ClaudeCode"}; c.available = true; a.cmds[OsDetect::OS::Windows] = c; }
         { OsCmd c; c.program = "brew"; c.args = {"install","--cask","claude-code"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","@anthropic-ai/claude-code"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
@@ -170,6 +173,7 @@ inline QVector<AppData> defaultCatalogue()
     {
         AppData a; a.id = "codex"; a.name = "Codex";
         a.description = "AI coding agent by OpenAI"; a.category = "AI Tools"; a.version = "latest";
+        a.iconPath = ":/icons/openai.svg";
         { OsCmd c; c.program = "winget"; c.args = {"install","--silent","--accept-package-agreements","--accept-source-agreements","OpenAI.Codex"}; c.available = true; a.cmds[OsDetect::OS::Windows] = c; }
         { OsCmd c; c.program = "brew"; c.args = {"install","--cask","codex"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","@openai/codex"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
@@ -180,6 +184,7 @@ inline QVector<AppData> defaultCatalogue()
     {
         AppData a; a.id = "opencode"; a.name = "OpenCode";
         a.description = "Open-source AI coding assistant"; a.category = "AI Tools"; a.version = "latest";
+        a.iconPath = ":/icons/placeholder.svg";
         { OsCmd c; c.program = "brew"; c.args = {"install","anomalyco/tap/opencode"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","opencode-ai"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
         a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];

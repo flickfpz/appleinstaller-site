@@ -1,5 +1,32 @@
 <RCC>
   <qresource prefix="/">
     <file>icons/placeholder.svg</file>
+    <file>icons/googlechrome.svg</file>
+    <file>icons/firefoxbrowser.svg</file>
+    <file>icons/brave.svg</file>
+    <file>icons/microsoftedge.svg</file>
+    <file>icons/vlcmediaplayer.svg</file>
+    <file>icons/spotify.svg</file>
+    <file>icons/handbrake.svg</file>
+    <file>icons/mpv.svg</file>
+    <file>icons/visualstudiocode.svg</file>
+    <file>icons/claude.svg</file>
+    <file>icons/openai.svg</file>
+    <file>icons/git.svg</file>
+    <file>icons/nodedotjs.svg</file>
+    <file>icons/python.svg</file>
+    <file>icons/cmake.svg</file>
+    <file>icons/neovim.svg</file>
+    <file>icons/github.svg</file>
+    <file>icons/7zip.svg</file>
+    <file>icons/obsidian.svg</file>
+    <file>icons/notion.svg</file>
+    <file>icons/discord.svg</file>
+    <file>icons/slack.svg</file>
+    <file>icons/zoom.svg</file>
+    <file>icons/telegram.svg</file>
+    <file>icons/bitwarden.svg</file>
+    <file>icons/gnupg.svg</file>
+    <file>icons/wireguard.svg</file>
   </qresource>
 </RCC>

@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Network Concurrent)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Network Concurrent Svg)
 
 # ── Sources ───────────────────────────────────────────────────────────────────
 set(SOURCES
@@ -47,6 +47,7 @@ target_link_libraries(Rigset PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::Concurrent
+    Qt6::Svg
 )
 
 target_include_directories(Rigset PRIVATE src)

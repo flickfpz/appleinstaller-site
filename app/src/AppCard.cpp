@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QRadialGradient>
 #include <QLinearGradient>
+#include <QSvgRenderer>
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -102,19 +103,23 @@ AppCard::AppCard(const AppData &data, QWidget *parent)
     setCursor(Qt::PointingHandCursor);
     setAttribute(Qt::WA_Hover);
 
-    auto *root = new QHBoxLayout(this);
-    root->setContentsMargins(16, 16, 16, 16);
-    root->setSpacing(12);
+    // Load the brand logo for the background
+    if (!data.iconPath.isEmpty()) {
+        QSvgRenderer renderer(data.iconPath);
+        if (renderer.isValid()) {
+            QSize sz = renderer.defaultSize();
+            sz.scale(120, 120, Qt::KeepAspectRatio);
+            m_logoPixmap = QPixmap(sz);
+            m_logoPixmap.fill(Qt::transparent);
+            QPainter p(&m_logoPixmap);
+            p.setRenderHint(QPainter::Antialiasing);
+            renderer.render(&p);
+        }
+    }
 
-    m_iconLabel = new QLabel(this);
-    m_iconLabel->setFixedSize(46, 46);
-    m_iconLabel->setPixmap(makeIconPixmap(data.name, 46));
-    m_iconLabel->setScaledContents(true);
-    root->addWidget(m_iconLabel, 0, Qt::AlignTop);
-
-    auto *col = new QVBoxLayout;
-    col->setSpacing(3);
-    col->setContentsMargins(0, 0, 0, 0);
+    auto *root = new QVBoxLayout(this);
+    root->setContentsMargins(16, 14, 16, 14);
+    root->setSpacing(2);
 
     m_nameLabel = new QLabel(data.name, this);
     m_nameLabel->setFont(ThemeManager::fontHeading());
@@ -126,11 +131,10 @@ AppCard::AppCard(const AppData &data, QWidget *parent)
     m_verLabel = new QLabel(data.version, this);
     m_verLabel->setFont(ThemeManager::fontCaption());
 
-    col->addWidget(m_nameLabel);
-    col->addWidget(m_descLabel);
-    col->addStretch();
-    col->addWidget(m_verLabel);
-    root->addLayout(col, 1);
+    root->addWidget(m_nameLabel);
+    root->addWidget(m_descLabel);
+    root->addStretch();
+    root->addWidget(m_verLabel);
 
     m_hoverAnim = new QPropertyAnimation(this, "hoverOpacity", this);
     m_hoverAnim->setDuration(200);
@@ -148,9 +152,6 @@ AppCard::AppCard(const AppData &data, QWidget *parent)
 
 void AppCard::applyTheme()
 {
-    // Refresh icon for new accent color
-    m_iconLabel->setPixmap(makeIconPixmap(m_data.name, 46));
-
     auto setPal = [](QLabel *lbl, const QColor &col) {
         QPalette p = lbl->palette();
         p.setColor(QPalette::WindowText, col);
@@ -295,6 +296,19 @@ void AppCard::paintEvent(QPaintEvent *)
         p.setPen(Qt::NoPen);
         p.drawPath(path);
 
+        // Brand logo as faded background
+        if (!m_logoPixmap.isNull()) {
+            p.save();
+            p.setClipPath(path);
+            p.setOpacity(0.08 + 0.04 * hov);
+            QSize sz = m_logoPixmap.size();
+            sz.scale(int(r.height() * 1.6), int(r.height() * 1.6), Qt::KeepAspectRatio);
+            QRectF logoRect(r.right() - sz.width() + 10, r.top() + (r.height() - sz.height()) / 2,
+                            sz.width(), sz.height());
+            p.drawPixmap(logoRect.toRect(), m_logoPixmap);
+            p.restore();
+        }
+
         // Hover shimmer: neon sweep across card
         if (hov > 0.0) {
             QLinearGradient shimmer(r.topLeft(), r.bottomRight());
@@ -318,6 +332,19 @@ void AppCard::paintEvent(QPaintEvent *)
         p.setBrush(fill);
         p.setPen(Qt::NoPen);
         p.drawPath(path);
+
+        // Brand logo as faded background
+        if (!m_logoPixmap.isNull()) {
+            p.save();
+            p.setClipPath(path);
+            p.setOpacity(0.10 + 0.05 * hov);
+            QSize sz = m_logoPixmap.size();
+            sz.scale(int(r.height() * 1.6), int(r.height() * 1.6), Qt::KeepAspectRatio);
+            QRectF logoRect(r.right() - sz.width() + 10, r.top() + (r.height() - sz.height()) / 2,
+                            sz.width(), sz.height());
+            p.drawPixmap(logoRect.toRect(), m_logoPixmap);
+            p.restore();
+        }
 
         if (hov > 0.0 && !m_checked) {
             QColor shimmer = pal.accent;

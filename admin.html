@@ -156,6 +156,7 @@
               <option value="Productivity">Productivity</option>
               <option value="Communication">Communication</option>
               <option value="Security">Security</option>
+              <option value="AI Tools">AI Tools</option>
             </select>
             <select class="admin-filter-select" id="apps-platform-filter" aria-label="Filter by platform">
               <option value="">All Platforms</option>
@@ -320,10 +321,8 @@
             <option value="Productivity">Productivity</option>
             <option value="Communication">Communication</option>
             <option value="Security">Security</option>
+            <option value="AI Tools">AI Tools</option>
           </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="app-form-platform">Platform</label>
           <select class="form-select" id="app-form-platform" required>
             <option value="all">All</option>
             <option value="windows">Windows</option>
@@ -450,7 +449,7 @@
     var LS_THEMES    = 'ai-admin-custom-themes';
     var LS_SETTINGS  = 'ai-admin-settings';
 
-    var CATEGORIES = ['Browsers','Media','Dev Tools','Productivity','Communication','Security'];
+    var CATEGORIES = ['Browsers','Media','Dev Tools','Productivity','Communication','Security','AI Tools'];
 
     var BUILTIN_THEMES = {
       midnight: {
@@ -1023,7 +1022,9 @@
 
     function ghHeaders() {
       var pat = window.__GH_PAT || sessionStorage.getItem('gh-pat');
-      return { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+      var h = { 'Accept': 'application/vnd.github+json' };
+      if (pat) { h['Authorization'] = 'token ' + pat; h['Content-Type'] = 'application/json'; }
+      return h;
     }
 
     function loadLiveVersion() {

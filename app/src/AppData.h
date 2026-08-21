@@ -184,7 +184,7 @@ inline QVector<AppData> defaultCatalogue()
     {
         AppData a; a.id = "opencode"; a.name = "OpenCode";
         a.description = "Open-source AI coding assistant"; a.category = "AI Tools"; a.version = "latest";
-        a.iconPath = ":/icons/placeholder.svg";
+        a.iconPath = ":/icons/opencode.svg";
         { OsCmd c; c.program = "brew"; c.args = {"install","anomalyco/tap/opencode"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","opencode-ai"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
         a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];

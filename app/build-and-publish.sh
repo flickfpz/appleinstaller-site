@@ -67,8 +67,8 @@ if [[ "$PLATFORM" == "linux" ]]; then
     done
     [[ -n "$BINARY" ]] || die "Linux binary not found in $BUILD_DIR"
     chmod +x "$BINARY"
-    tar -czf "$OUTPUT_DIR/Rigset-linux-x86_64.tar.gz" -C "$BUILD_DIR" Rigset
-    ASSET="Rigset-linux-x86_64.tar.gz"
+    tar -czf "$OUTPUT_DIR/rigset-linux-x86_64.tar.gz" -C "$BUILD_DIR" Rigset
+    ASSET="rigset-linux-x86_64.tar.gz"
     success "Packaged: Rigset-linux-x86_64.tar.gz"
 
 elif [[ "$PLATFORM" == "macos" ]]; then
@@ -78,14 +78,14 @@ elif [[ "$PLATFORM" == "macos" ]]; then
     done
     [[ -n "$BINARY" ]] || die "macOS binary not found in $BUILD_DIR"
     if [[ -d "$BINARY" ]]; then
-        tar -czf "$OUTPUT_DIR/Rigset-macos-arm64.tar.gz" -C "$BUILD_DIR" "$(basename "$BINARY")"
+        tar -czf "$OUTPUT_DIR/rigset-macos-arm64.tar.gz" -C "$BUILD_DIR" "$(basename "$BINARY")"
     else
         cp "$BINARY" "$OUTPUT_DIR/Rigset"
-        tar -czf "$OUTPUT_DIR/Rigset-macos-arm64.tar.gz" -C "$OUTPUT_DIR" Rigset
+        tar -czf "$OUTPUT_DIR/rigset-macos-arm64.tar.gz" -C "$OUTPUT_DIR" Rigset
         rm -f "$OUTPUT_DIR/Rigset"
     fi
-    ASSET="Rigset-macos-arm64.tar.gz"
-    success "Packaged: Rigset-macos-arm64.tar.gz"
+    ASSET="rigset-macos-arm64.tar.gz"
+    success "Packaged: rigset-macos-arm64.tar.gz"
 fi
 
 # ── Update version.json ────────────────────────────────────────────────────────

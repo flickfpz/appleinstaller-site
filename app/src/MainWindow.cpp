@@ -351,9 +351,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     buildGrid();
     buildPages();
-    goToPage(0);
 
-    // Wizard button
+    // Grid is the default view — wizard lives behind the toggle button
+    m_stack->setCurrentIndex(0);
     m_wizardBtn->setText("Wizard");
     connect(m_wizardBtn, &QPushButton::clicked, this, &MainWindow::toggleWizard);
 
@@ -414,14 +414,13 @@ void MainWindow::toggleWizard()
 {
     m_wizardMode = !m_wizardMode;
     if (m_wizardMode) {
-        m_stack->setCurrentIndex(1);
         m_wizardBtn->setText("Grid");
         m_stepLabel->setVisible(true);
         goToPage(0);
     } else {
         m_stack->setCurrentIndex(0);
         m_wizardBtn->setText("Wizard");
-        m_stepLabel->setVisible(false);
+    m_stepLabel->setVisible(m_wizardMode);
         m_titleLabel->setText("Rigset");
         m_subtitleLabel->setText("Pick the apps you want \u2014 we'll install them all at once.");
         refreshInstallButton();

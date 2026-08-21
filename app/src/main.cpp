@@ -1,11 +1,24 @@
 #include <QApplication>
 #include <QScreen>
+#include <cstdio>
 #include "MainWindow.h"
 #include "Theme.h"
 #include "UpdateChecker.h"
 
+static void msgHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
+{
+    // Qt's platform-theme layer queries the system font during QApplication
+    // construction — before app.setFont() can take effect — and warns when
+    // the desktop environment reports an empty font name. Harmless; drop it.
+    if (msg.contains("QFont::fromString: Invalid description '(empty)'"))
+        return;
+    std::fprintf(stderr, "%s\n", qPrintable(msg));
+}
+
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(msgHandler);
+
     QApplication::setHighDpiScaleFactorRoundingPolicy(
         Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 

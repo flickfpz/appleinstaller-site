@@ -63,21 +63,27 @@ private slots:
     void goToPage(int index);
     void onInstallClicked();
     void refreshInstallButton();
+    void toggleWizard();
+    void filterGrid(const QString &category);
 
 private:
     void buildPages();
+    void buildGrid();
     void applyFilter();
 
     QVector<AppData>        m_catalogue;
     QVector<WizardPage*>    m_pages;
+    QVector<AppCard*>       m_gridCards;
     QStringList             m_categoryOrder;
     QStringList             m_selectedIds;
     int                     m_currentPage = 0;
+    bool                    m_wizardMode  = false;
 
     CategoryPanel      *m_sidebar       = nullptr;
     QStackedWidget     *m_stack         = nullptr;
     ProgressOverlay    *m_overlay       = nullptr;
     GradientBackground *m_gradientBg    = nullptr;
+    QScrollArea        *m_gridScroll    = nullptr;
 
     QWidget     *m_headerWidget  = nullptr;
     QWidget     *m_bottomBar     = nullptr;
@@ -86,6 +92,7 @@ private:
     QLabel      *m_subtitleLabel = nullptr;
     QLineEdit   *m_searchBox     = nullptr;
     QPushButton *m_installBtn    = nullptr;
+    QPushButton *m_wizardBtn     = nullptr;
     QLabel      *m_countLabel    = nullptr;
     QLabel      *m_stepLabel     = nullptr;
     ThemePicker *m_themePicker   = nullptr;

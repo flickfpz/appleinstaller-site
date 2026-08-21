@@ -246,11 +246,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     m_sidebar = new CategoryPanel(categories, m_centralWidget);
     connect(m_sidebar, &CategoryPanel::categorySelected, this, [this](const QString &cat) {
-        if (cat.isEmpty()) {
-            goToPage(0);
+        if (m_wizardMode) {
+            if (cat.isEmpty()) {
+                goToPage(0);
+            } else {
+                int idx = m_categoryOrder.indexOf(cat);
+                if (idx >= 0) goToPage(idx + 1);
+            }
         } else {
-            int idx = m_categoryOrder.indexOf(cat);
-            if (idx >= 0) goToPage(idx + 1);
+            filterGrid(cat);
         }
     });
     rootH->addWidget(m_sidebar);
@@ -289,6 +293,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     m_themePicker = new ThemePicker(m_headerWidget);
 
+    m_wizardBtn = new QPushButton(m_headerWidget);
+    m_wizardBtn->setFixedHeight(30);
+    m_wizardBtn->setCursor(Qt::PointingHandCursor);
+    m_wizardBtn->setFont(ThemeManager::fontCaption());
+
     m_osBadge = new QLabel(m_headerWidget);
     m_osBadge->setFont(ThemeManager::fontCaption());
     m_osBadge->setToolTip(OsDetect::name());
@@ -300,6 +309,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     topRow->addSpacing(6);
     topRow->addWidget(m_osBadge);
     topRow->addStretch();
+    topRow->addWidget(m_wizardBtn);
     topRow->addWidget(m_themePicker);
     topRow->addWidget(m_searchBox);
 
@@ -339,8 +349,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_overlay->hide();
     connect(m_overlay, &ProgressOverlay::closed, this, [this]() { m_overlay->hide(); });
 
+    buildGrid();
     buildPages();
     goToPage(0);
+
+    // Wizard button
+    m_wizardBtn->setText("Wizard");
+    connect(m_wizardBtn, &QPushButton::clicked, this, &MainWindow::toggleWizard);
 
     connect(&TM(), &ThemeManager::themeChanged, this, &MainWindow::applyTheme);
     applyTheme();
@@ -369,12 +384,64 @@ void MainWindow::buildPages()
     }
 }
 
+void MainWindow::buildGrid()
+{
+    m_gridScroll = new QScrollArea(m_stack);
+    m_gridScroll->setWidgetResizable(true);
+    m_gridScroll->setFrameShape(QFrame::NoFrame);
+    m_gridScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_gridScroll->setAttribute(Qt::WA_TranslucentBackground);
+
+    auto *container = new QWidget();
+    container->setAttribute(Qt::WA_TranslucentBackground);
+    auto *grid = new QGridLayout(container);
+    grid->setContentsMargins(24, 16, 24, 16);
+    grid->setSpacing(12);
+
+    for (int i = 0; i < m_catalogue.size(); ++i) {
+        auto *card = new AppCard(m_catalogue[i], container);
+        m_gridCards << card;
+        grid->addWidget(card, i / 3, i % 3);
+        connect(card, &AppCard::selectionChanged, this, &MainWindow::refreshInstallButton);
+    }
+    grid->setRowStretch((m_catalogue.size() / 3) + 1, 1);
+
+    m_gridScroll->setWidget(container);
+    m_stack->addWidget(m_gridScroll);
+}
+
+void MainWindow::toggleWizard()
+{
+    m_wizardMode = !m_wizardMode;
+    if (m_wizardMode) {
+        m_stack->setCurrentIndex(1);
+        m_wizardBtn->setText("Grid");
+        m_stepLabel->setVisible(true);
+        goToPage(0);
+    } else {
+        m_stack->setCurrentIndex(0);
+        m_wizardBtn->setText("Wizard");
+        m_stepLabel->setVisible(false);
+        m_titleLabel->setText("Rigset");
+        m_subtitleLabel->setText("Pick the apps you want \u2014 we'll install them all at once.");
+        refreshInstallButton();
+    }
+}
+
+void MainWindow::filterGrid(const QString &category)
+{
+    for (int i = 0; i < m_catalogue.size(); ++i) {
+        bool show = category.isEmpty() || m_catalogue[i].category == category;
+        m_gridCards[i]->setVisible(show);
+    }
+}
+
 void MainWindow::goToPage(int index)
 {
     if (index < 0 || index >= m_pages.size()) return;
 
     m_currentPage = index;
-    m_stack->setCurrentIndex(index);
+    m_stack->setCurrentIndex(index + 1);
 
     WizardPage *page = m_pages[index];
 
@@ -393,8 +460,13 @@ void MainWindow::goToPage(int index)
 void MainWindow::refreshInstallButton()
 {
     int n = 0;
-    for (WizardPage *page : m_pages)
-        n += page->selectedIds().size();
+    if (m_wizardMode) {
+        for (WizardPage *page : m_pages)
+            n += page->selectedIds().size();
+    } else {
+        for (AppCard *card : m_gridCards)
+            if (card->isChecked()) ++n;
+    }
 
     m_installBtn->setEnabled(n > 0);
     m_countLabel->setText(n == 0 ? "No apps selected"
@@ -408,15 +480,22 @@ void MainWindow::refreshInstallButton()
 void MainWindow::onInstallClicked()
 {
     QVector<AppData> toInstall;
-    for (WizardPage *page : m_pages) {
-        QVector<QString> ids = page->selectedIds();
-        for (const QString &id : ids) {
-            for (const AppData &app : m_catalogue) {
-                if (app.id == id) {
-                    toInstall << app;
-                    break;
+    if (m_wizardMode) {
+        for (WizardPage *page : m_pages) {
+            QVector<QString> ids = page->selectedIds();
+            for (const QString &id : ids) {
+                for (const AppData &app : m_catalogue) {
+                    if (app.id == id) {
+                        toInstall << app;
+                        break;
+                    }
                 }
             }
+        }
+    } else {
+        for (AppCard *card : m_gridCards) {
+            if (card->isChecked())
+                toInstall << card->appData();
         }
     }
     if (toInstall.isEmpty()) return;
@@ -542,6 +621,26 @@ QPushButton:pressed { background-color: %4; }
 QPushButton:disabled { background-color: %5; color: %6; }
 )").arg(c(pal.accent)).arg(c(pal.accentText)).arg(c(pal.accentHover))
           .arg(c(pal.accentPressed)).arg(c(pal.accentDisabled)).arg(c(pal.textDisabled)));
+    }
+
+    m_stepLabel->setVisible(false);
+
+    if (isMid) {
+        m_wizardBtn->setStyleSheet(QStringLiteral(R"(
+QPushButton {
+    background: transparent; color: %1; border: 1px solid %2;
+    border-radius: 8px; padding: 4px 14px; font-size: 12px;
+}
+QPushButton:hover { background: rgba(138,80,255,40); color: %3; }
+)").arg(c(pal.textSecondary)).arg(c(QColor(130,80,255,120))).arg(c(pal.textPrimary)));
+    } else {
+        m_wizardBtn->setStyleSheet(QStringLiteral(R"(
+QPushButton {
+    background: transparent; color: %1; border: 1px solid %2;
+    border-radius: 8px; padding: 4px 14px; font-size: 12px;
+}
+QPushButton:hover { background: %3; color: %4; }
+)").arg(c(pal.textSecondary)).arg(c(pal.border)).arg(c(pal.accentSubtle)).arg(c(pal.textPrimary)));
     }
 
     for (WizardPage *page : m_pages)

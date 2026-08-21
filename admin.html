@@ -31,15 +31,17 @@
       <button id="auth-submit" style="width:100%;padding:0.6rem;border:none;border-radius:8px;background:#7c8aff;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;">Unlock</button>
     </div>
   </div>
+  <script src="config.js" onerror="window.RIGSET_CONFIG={}"></script>
   <script>
-  (function(){
+    (function(){
     var gate=document.getElementById('auth-gate'),inp=document.getElementById('auth-password'),
         err=document.getElementById('auth-error'),btn=document.getElementById('auth-submit');
 
     var MAX_ATTEMPTS=5,LOCKOUT_MS=300000;
-    var AUTH_SALT='cmlnc2V0LWFkbWluLXYx';
-    var AUTH_HASH='zAnMcqqVNntH4AAG7EZC4DossV3wP+7NJKwwr8zmWso=';
-    var AUTH_ITER=100000;
+    var cfg=window.RIGSET_CONFIG||{};
+    var AUTH_SALT=cfg.AUTH_SALT||'';
+    var AUTH_HASH=cfg.AUTH_HASH||'';
+    var AUTH_ITER=cfg.AUTH_ITER||100000;
 
     if(sessionStorage.getItem('admin-ok')){gate.style.display='none';return;}
 
@@ -1083,9 +1085,12 @@
 
     function restorePat() {
       var saved = sessionStorage.getItem('gh-pat');
-      if (saved) {
-        patInput.value = saved;
-        patStatus.textContent = 'Token saved for this session.';
+      var fromCfg = (window.RIGSET_CONFIG || {}).GH_PAT || '';
+      var val = saved || fromCfg;
+      if (val) {
+        patInput.value = val;
+        if (!saved && fromCfg) sessionStorage.setItem('gh-pat', fromCfg);
+        patStatus.textContent = 'Token loaded from config.';
         patStatus.style.color = '#37D85F';
       }
     }

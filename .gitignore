@@ -6,3 +6,5 @@ CMakeCache.txt
 CMakeFiles/
 .ninja*
 compile_commands.json
+.env
+config.js

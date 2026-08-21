@@ -12,6 +12,7 @@
 #include <QRadialGradient>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QMessageBox>
 #include <QPropertyAnimation>
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -298,6 +299,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_wizardBtn->setCursor(Qt::PointingHandCursor);
     m_wizardBtn->setFont(ThemeManager::fontCaption());
 
+    m_uninstallBtn = new QPushButton("Uninstall", m_headerWidget);
+    m_uninstallBtn->setFixedHeight(30);
+    m_uninstallBtn->setCursor(Qt::PointingHandCursor);
+    m_uninstallBtn->setFont(ThemeManager::fontCaption());
+
     m_osBadge = new QLabel(m_headerWidget);
     m_osBadge->setFont(ThemeManager::fontCaption());
     m_osBadge->setToolTip(OsDetect::name());
@@ -310,6 +316,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     topRow->addWidget(m_osBadge);
     topRow->addStretch();
     topRow->addWidget(m_wizardBtn);
+    topRow->addWidget(m_uninstallBtn);
     topRow->addWidget(m_themePicker);
     topRow->addWidget(m_searchBox);
 
@@ -356,6 +363,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_stack->setCurrentIndex(0);
     m_wizardBtn->setText("Wizard");
     connect(m_wizardBtn, &QPushButton::clicked, this, &MainWindow::toggleWizard);
+    connect(m_uninstallBtn, &QPushButton::clicked, this, &MainWindow::toggleUninstall);
 
     connect(&TM(), &ThemeManager::themeChanged, this, &MainWindow::applyTheme);
     applyTheme();
@@ -420,11 +428,34 @@ void MainWindow::toggleWizard()
     } else {
         m_stack->setCurrentIndex(0);
         m_wizardBtn->setText("Wizard");
-    m_stepLabel->setVisible(m_wizardMode);
+        m_stepLabel->setVisible(false);
         m_titleLabel->setText("Rigset");
-        m_subtitleLabel->setText("Pick the apps you want \u2014 we'll install them all at once.");
+        m_subtitleLabel->setText(m_uninstallMode
+            ? "Select apps to remove from this machine."
+            : "Pick the apps you want \u2014 we'll install them all at once.");
         refreshInstallButton();
     }
+}
+
+void MainWindow::toggleUninstall()
+{
+    m_uninstallMode = !m_uninstallMode;
+    m_uninstallBtn->setText(m_uninstallMode ? "Cancel" : "Uninstall");
+
+    // Clear picks so install selections can't bleed into an uninstall run
+    for (AppCard *card : m_gridCards)
+        card->setChecked(false);
+    for (WizardPage *page : m_pages)
+        page->deselectAll();
+
+    if (!m_wizardMode) {
+        m_subtitleLabel->setText(m_uninstallMode
+            ? "Select apps to remove from this machine."
+            : "Pick the apps you want \u2014 we'll install them all at once.");
+    }
+
+    applyTheme();
+    refreshInstallButton();
 }
 
 void MainWindow::filterGrid(const QString &category)
@@ -471,9 +502,13 @@ void MainWindow::refreshInstallButton()
     m_countLabel->setText(n == 0 ? "No apps selected"
                         : n == 1 ? "1 app selected"
                                  : QStringLiteral("%1 apps selected").arg(n));
-    m_installBtn->setText(n > 0
-        ? QStringLiteral("Install %1 App%2").arg(n).arg(n > 1 ? "s" : "")
-        : "Install Selected");
+    if (n == 0) {
+        m_installBtn->setText(m_uninstallMode ? "Remove Selected" : "Install Selected");
+    } else {
+        const QString verb = m_uninstallMode ? "Remove" : "Install";
+        m_installBtn->setText(QStringLiteral("%1 %2 App%3")
+                                  .arg(verb).arg(n).arg(n > 1 ? "s" : ""));
+    }
 }
 
 void MainWindow::onInstallClicked()
@@ -499,7 +534,21 @@ void MainWindow::onInstallClicked()
     }
     if (toInstall.isEmpty()) return;
     m_overlay->setGeometry(rect());
-    m_overlay->startInstall(toInstall);
+
+    if (m_uninstallMode) {
+        const int n = toInstall.size();
+        const auto answer = QMessageBox::question(
+            this, "Uninstall Apps",
+            QStringLiteral("Remove %1 app%2 from this machine?\n\n"
+                           "This cannot be undone.")
+                .arg(n).arg(n > 1 ? "s" : ""),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (answer != QMessageBox::Yes) return;
+
+        m_overlay->startUninstall(toInstall);
+    } else {
+        m_overlay->startInstall(toInstall);
+    }
 }
 
 // ── Theme ────────────────────────────────────────────────────────────────────
@@ -589,7 +638,43 @@ QLineEdit:focus { border-color: %4; background-color: %5; }
             .arg(c(pal.glassBg)).arg(c(pal.glassBorder)));
     }
 
-    if (isMid) {
+    if (m_uninstallMode) {
+        // Danger styling — red action button in every theme
+        if (isMid) {
+            m_installBtn->setStyleSheet(QStringLiteral(R"(
+QPushButton {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+        stop:0 #FF5A6E, stop:0.5 #E04350, stop:1 #C02A38);
+    color: #FFFFFF; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 700; padding: 0 28px;
+}
+QPushButton:hover {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+        stop:0 #FF7085, stop:0.5 #F05565, stop:1 #D03848);
+}
+QPushButton:pressed {
+    background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
+        stop:0 #D0404E, stop:1 #A02030);
+}
+QPushButton:disabled {
+    background: rgba(100,60,80,180); color: rgba(200,150,170,130);
+}
+)"));
+        } else {
+            m_installBtn->setStyleSheet(QStringLiteral(R"(
+QPushButton {
+    background-color: %1; color: %2; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 700; padding: 0 28px;
+}
+QPushButton:hover { background-color: %3; }
+QPushButton:pressed { background-color: %4; }
+QPushButton:disabled { background-color: %5; color: %6; }
+)").arg(c(pal.danger)).arg(c(pal.textOnAccent))
+              .arg(c(pal.danger.lighter(110)))
+              .arg(c(pal.danger.darker(115)))
+              .arg(c(pal.accentDisabled)).arg(c(pal.textDisabled)));
+        }
+    } else if (isMid) {
         m_installBtn->setStyleSheet(QStringLiteral(R"(
 QPushButton {
     background: qlineargradient(x1:0,y1:0,x2:1,y2:1,
@@ -622,24 +707,28 @@ QPushButton:disabled { background-color: %5; color: %6; }
           .arg(c(pal.accentPressed)).arg(c(pal.accentDisabled)).arg(c(pal.textDisabled)));
     }
 
-    m_stepLabel->setVisible(false);
+    m_stepLabel->setVisible(m_wizardMode);
 
     if (isMid) {
-        m_wizardBtn->setStyleSheet(QStringLiteral(R"(
+        const QString pillStyle = QStringLiteral(R"(
 QPushButton {
     background: transparent; color: %1; border: 1px solid %2;
     border-radius: 8px; padding: 4px 14px; font-size: 12px;
 }
 QPushButton:hover { background: rgba(138,80,255,40); color: %3; }
-)").arg(c(pal.textSecondary)).arg(c(QColor(130,80,255,120))).arg(c(pal.textPrimary)));
+)").arg(c(pal.textSecondary)).arg(c(QColor(130,80,255,120))).arg(c(pal.textPrimary));
+        m_wizardBtn->setStyleSheet(pillStyle);
+        m_uninstallBtn->setStyleSheet(pillStyle);
     } else {
-        m_wizardBtn->setStyleSheet(QStringLiteral(R"(
+        const QString pillStyle = QStringLiteral(R"(
 QPushButton {
     background: transparent; color: %1; border: 1px solid %2;
     border-radius: 8px; padding: 4px 14px; font-size: 12px;
 }
 QPushButton:hover { background: %3; color: %4; }
-)").arg(c(pal.textSecondary)).arg(c(pal.border)).arg(c(pal.accentSubtle)).arg(c(pal.textPrimary)));
+)").arg(c(pal.textSecondary)).arg(c(pal.border)).arg(c(pal.accentSubtle)).arg(c(pal.textPrimary));
+        m_wizardBtn->setStyleSheet(pillStyle);
+        m_uninstallBtn->setStyleSheet(pillStyle);
     }
 
     for (WizardPage *page : m_pages)

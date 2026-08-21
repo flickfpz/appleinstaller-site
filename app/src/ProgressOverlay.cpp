@@ -72,11 +72,23 @@ ProgressOverlay::ProgressOverlay(QWidget *parent)
 
 void ProgressOverlay::startInstall(const QVector<AppData> &apps)
 {
+    beginRun(apps, InstallWorker::Mode::Install);
+    m_titleLabel->setText("Installing Apps");
+}
+
+void ProgressOverlay::startUninstall(const QVector<AppData> &apps)
+{
+    beginRun(apps, InstallWorker::Mode::Uninstall);
+    m_titleLabel->setText("Removing Apps");
+}
+
+void ProgressOverlay::beginRun(const QVector<AppData> &apps, InstallWorker::Mode mode)
+{
+    m_uninstall = (mode == InstallWorker::Mode::Uninstall);
     m_log->clear();
     m_bar->setValue(0);
     m_doneBtn->hide();
     m_statusLabel->setText("Preparing…");
-    m_titleLabel->setText("Installing Apps");
 
     show();
     raise();
@@ -91,7 +103,7 @@ void ProgressOverlay::startInstall(const QVector<AppData> &apps)
     }
 
     m_thread = new QThread(this);
-    m_worker = new InstallWorker(apps);
+    m_worker = new InstallWorker(apps, mode);
     m_worker->moveToThread(m_thread);
 
     connect(m_thread, &QThread::started,     m_worker, &InstallWorker::run);
@@ -235,8 +247,9 @@ void ProgressOverlay::onProgress(int current, int total, const QString &appName)
     m_bar->setValue(pct);
     if (!appName.isEmpty())
         m_statusLabel->setText(
-            QStringLiteral("Installing %1…  (%2 of %3)")
-            .arg(appName).arg(current + 1).arg(total));
+            QStringLiteral("%1 %2…  (%3 of %4)")
+            .arg(m_uninstall ? "Removing" : "Installing",
+                 appName, QString::number(current + 1), QString::number(total)));
     else
         m_statusLabel->setText("Finishing up…");
 }
@@ -246,8 +259,11 @@ void ProgressOverlay::onAppFinished(const InstallResult &result)
     QString icon, text;
     if (result.skipped) {
         icon = "⊘";
-        text = QStringLiteral("%1  %2  (not available on %3)")
-                   .arg(icon, result.name, OsDetect::tag());
+        text = m_uninstall
+            ? QStringLiteral("%1  %2  (nothing to remove on %3)")
+                       .arg(icon, result.name, OsDetect::tag())
+            : QStringLiteral("%1  %2  (not available on %3)")
+                       .arg(icon, result.name, OsDetect::tag());
         auto *item = new QListWidgetItem(text, m_log);
         item->setForeground(TM().colors().textTertiary);
     } else {
@@ -263,9 +279,12 @@ void ProgressOverlay::onFinished(int succeeded, int failed, int skipped)
 {
     m_bar->setValue(100);
     m_statusLabel->setText(
-        QStringLiteral("Done — %1 installed, %2 failed, %3 skipped")
-            .arg(succeeded).arg(failed).arg(skipped));
-    m_titleLabel->setText(failed == 0 ? "All Done " : "Completed with Errors");
+        QStringLiteral("Done — %1 %2, %3 failed, %4 skipped")
+            .arg(succeeded)
+            .arg(m_uninstall ? "removed" : "installed")
+            .arg(failed).arg(skipped));
+    m_titleLabel->setText(failed == 0 ? (m_uninstall ? "All Removed" : "All Done ")
+                                      : "Completed with Errors");
     m_doneBtn->show();
 }
 

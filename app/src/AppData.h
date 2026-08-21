@@ -21,10 +21,17 @@ struct AppData {
     QString version;
 
     QMap<OsDetect::OS, OsCmd> cmds;
+    QMap<OsDetect::OS, OsCmd> uninstalls;
 
     OsCmd cmdForCurrentOs() const {
         auto it = cmds.find(OsDetect::current());
         if (it != cmds.end()) return it.value();
+        OsCmd empty; empty.available = false; return empty;
+    }
+
+    OsCmd uninstallCmdForCurrentOs() const {
+        auto it = uninstalls.find(OsDetect::current());
+        if (it != uninstalls.end()) return it.value();
         OsCmd empty; empty.available = false; return empty;
     }
 
@@ -55,30 +62,55 @@ inline AppData makeApp(
                    "--accept-source-agreements", win };
         c.available = true;
         a.cmds[OsDetect::OS::Windows] = c;
+
+        OsCmd u; u.program = "winget";
+        u.args = { "uninstall", "--silent", win };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::Windows] = u;
     }
     if (!mac.isEmpty()) {
         OsCmd c; c.program = "brew";
         c.args = { "install", "--cask", mac };
         c.available = true;
         a.cmds[OsDetect::OS::macOS] = c;
+
+        OsCmd u; u.program = "brew";
+        u.args = { "uninstall", "--cask", mac };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::macOS] = u;
     }
     if (!arch.isEmpty()) {
         OsCmd c; c.program = "sudo";
         c.args = { "pacman", "-S", "--noconfirm", "--needed", arch };
         c.available = true;
         a.cmds[OsDetect::OS::Arch] = c;
+
+        OsCmd u; u.program = "sudo";
+        u.args = { "pacman", "-Rns", "--noconfirm", arch };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::Arch] = u;
     }
     if (!deb.isEmpty()) {
         OsCmd c; c.program = "sudo";
         c.args = { "apt-get", "install", "-y", deb };
         c.available = true;
         a.cmds[OsDetect::OS::Debian] = c;
+
+        OsCmd u; u.program = "sudo";
+        u.args = { "apt-get", "remove", "-y", deb };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::Debian] = u;
     }
     if (!fed.isEmpty()) {
         OsCmd c; c.program = "sudo";
         c.args = { "dnf", "install", "-y", fed };
         c.available = true;
         a.cmds[OsDetect::OS::Fedora] = c;
+
+        OsCmd u; u.program = "sudo";
+        u.args = { "dnf", "remove", "-y", fed };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::Fedora] = u;
     }
     return a;
 }
@@ -97,6 +129,12 @@ inline AppData makeFormula(
         c.args = { "install", mac };
         c.available = true;
         a.cmds[OsDetect::OS::macOS] = c;
+
+        // makeApp built a --cask uninstall for the same id — replace with formula
+        OsCmd u; u.program = "brew";
+        u.args = { "uninstall", mac };
+        u.available = true;
+        a.uninstalls[OsDetect::OS::macOS] = u;
     }
     return a;
 }
@@ -168,6 +206,11 @@ inline QVector<AppData> defaultCatalogue()
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","@anthropic-ai/claude-code"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
         a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
         a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        { OsCmd u; u.program = "winget"; u.args = {"uninstall","--silent","Anthropic.ClaudeCode"}; u.available = true; a.uninstalls[OsDetect::OS::Windows] = u; }
+        { OsCmd u; u.program = "brew"; u.args = {"uninstall","--cask","claude-code"}; u.available = true; a.uninstalls[OsDetect::OS::macOS] = u; }
+        { OsCmd u; u.program = "npm"; u.args = {"uninstall","-g","@anthropic-ai/claude-code"}; u.available = true; a.uninstalls[OsDetect::OS::Arch] = u; }
+        a.uninstalls[OsDetect::OS::Debian] = a.uninstalls[OsDetect::OS::Arch];
+        a.uninstalls[OsDetect::OS::Fedora] = a.uninstalls[OsDetect::OS::Arch];
         cat << a;
     }
     {
@@ -179,6 +222,11 @@ inline QVector<AppData> defaultCatalogue()
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","@openai/codex"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
         a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
         a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        { OsCmd u; u.program = "winget"; u.args = {"uninstall","--silent","OpenAI.Codex"}; u.available = true; a.uninstalls[OsDetect::OS::Windows] = u; }
+        { OsCmd u; u.program = "brew"; u.args = {"uninstall","--cask","codex"}; u.available = true; a.uninstalls[OsDetect::OS::macOS] = u; }
+        { OsCmd u; u.program = "npm"; u.args = {"uninstall","-g","@openai/codex"}; u.available = true; a.uninstalls[OsDetect::OS::Arch] = u; }
+        a.uninstalls[OsDetect::OS::Debian] = a.uninstalls[OsDetect::OS::Arch];
+        a.uninstalls[OsDetect::OS::Fedora] = a.uninstalls[OsDetect::OS::Arch];
         cat << a;
     }
     {
@@ -189,6 +237,10 @@ inline QVector<AppData> defaultCatalogue()
         { OsCmd c; c.program = "npm"; c.args = {"install","-g","opencode-ai"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
         a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
         a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        { OsCmd u; u.program = "brew"; u.args = {"uninstall","opencode"}; u.available = true; a.uninstalls[OsDetect::OS::macOS] = u; }
+        { OsCmd u; u.program = "npm"; u.args = {"uninstall","-g","opencode-ai"}; u.available = true; a.uninstalls[OsDetect::OS::Arch] = u; }
+        a.uninstalls[OsDetect::OS::Debian] = a.uninstalls[OsDetect::OS::Arch];
+        a.uninstalls[OsDetect::OS::Fedora] = a.uninstalls[OsDetect::OS::Arch];
         cat << a;
     }
 

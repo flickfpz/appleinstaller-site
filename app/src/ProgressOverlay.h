@@ -16,6 +16,7 @@ public:
     explicit ProgressOverlay(QWidget *parent = nullptr);
 
     void startInstall(const QVector<AppData> &apps);
+    void startUninstall(const QVector<AppData> &apps);
     void reset();
 
 public slots:
@@ -38,6 +39,7 @@ private:
     qreal opacity() const     { return m_opacity; }
     void  setOpacity(qreal v) { m_opacity = v; update(); }
 
+    void beginRun(const QVector<AppData> &apps, InstallWorker::Mode mode);
     void fadeIn();
     void repositionCard();
 
@@ -51,5 +53,6 @@ private:
     QThread      *m_thread      = nullptr;
     InstallWorker*m_worker      = nullptr;
 
+    bool          m_uninstall   = false;   // wording switches to "removing"
     qreal         m_opacity     = 0.0;
 };

@@ -64,6 +64,7 @@ private slots:
     void onInstallClicked();
     void refreshInstallButton();
     void toggleWizard();
+    void toggleUninstall();
     void filterGrid(const QString &category);
 
 private:
@@ -78,6 +79,7 @@ private:
     QStringList             m_selectedIds;
     int                     m_currentPage = 0;
     bool                    m_wizardMode  = false;
+    bool                    m_uninstallMode = false;
 
     CategoryPanel      *m_sidebar       = nullptr;
     QStackedWidget     *m_stack         = nullptr;
@@ -93,6 +95,7 @@ private:
     QLineEdit   *m_searchBox     = nullptr;
     QPushButton *m_installBtn    = nullptr;
     QPushButton *m_wizardBtn     = nullptr;
+    QPushButton *m_uninstallBtn  = nullptr;
     QLabel      *m_countLabel    = nullptr;
     QLabel      *m_stepLabel     = nullptr;
     ThemePicker *m_themePicker   = nullptr;

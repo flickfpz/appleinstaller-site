@@ -5,8 +5,8 @@
 #include <QThread>
 #include <QProcessEnvironment>
 
-InstallWorker::InstallWorker(const QVector<AppData> &apps, QObject *parent)
-    : QObject(parent), m_apps(apps)
+InstallWorker::InstallWorker(const QVector<AppData> &apps, Mode mode, QObject *parent)
+    : QObject(parent), m_apps(apps), m_mode(mode)
 {}
 
 // ── run ───────────────────────────────────────────────────────────────────────
@@ -22,7 +22,7 @@ void InstallWorker::run()
         const AppData &app = m_apps[i];
         emit progress(i, total, app.name);
 
-        InstallResult result = runCommand(app);
+        InstallResult result = runCommand(app, m_mode);
         emit appFinished(result);
 
         if      (result.skipped) ++skipped;
@@ -38,13 +38,14 @@ void InstallWorker::run()
 
 // ── runCommand ────────────────────────────────────────────────────────────────
 
-InstallResult InstallWorker::runCommand(const AppData &app)
+InstallResult InstallWorker::runCommand(const AppData &app, Mode mode)
 {
     InstallResult result;
     result.id   = app.id;
     result.name = app.name;
 
-    const OsCmd cmd = app.cmdForCurrentOs();
+    const OsCmd cmd = (mode == Mode::Uninstall) ? app.uninstallCmdForCurrentOs()
+                                                : app.cmdForCurrentOs();
 
     // ── Not available on this OS ──────────────────────────────────────────────
     if (!cmd.available || cmd.program.isEmpty()) {

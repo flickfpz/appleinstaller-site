@@ -17,7 +17,10 @@ class InstallWorker : public QObject
     Q_OBJECT
 
 public:
-    explicit InstallWorker(const QVector<AppData> &apps, QObject *parent = nullptr);
+    enum class Mode { Install, Uninstall };
+
+    explicit InstallWorker(const QVector<AppData> &apps,
+                           Mode mode = Mode::Install, QObject *parent = nullptr);
 
 public slots:
     void run();
@@ -29,8 +32,9 @@ signals:
     void finished(int succeeded, int failed, int skipped);
 
 private:
-    static InstallResult runCommand(const AppData &app);
+    static InstallResult runCommand(const AppData &app, Mode mode);
     static bool isAlreadyInstalledCode(const QString &program, int code);
 
     QVector<AppData> m_apps;
+    Mode             m_mode;
 };

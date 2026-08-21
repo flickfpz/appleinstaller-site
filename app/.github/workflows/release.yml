@@ -165,7 +165,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/flickfpz/appleinstaller-site.git /tmp/site
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/flickfpz/rigset.git /tmp/site
 
           cp windows-installer/Rigset-Setup.exe /tmp/site/
           cp linux-binary/Rigset-linux-x86_64.tar.gz /tmp/site/

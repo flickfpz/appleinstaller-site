@@ -1,18 +1,18 @@
 # Rigset — Website
 
-Public landing page, admin panel, and install scripts for [Rigset](https://github.com/flickfpz/appleinstaller-site/tree/main/app).
+Public landing page, admin panel, and install scripts for [Rigset](https://github.com/flickfpz/rigset/tree/main/app).
 
 ## Quick Install (Linux / macOS)
 
 ```bash
-curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
+curl -fsSL https://flickfpz.github.io/rigset/install.sh | bash
 ```
 
 ## Website
 
-The site is live at **https://flickfpz.github.io/appleinstaller-site/**
+The site is live at **https://flickfpz.github.io/rigset/**
 
-Admin panel at **https://flickfpz.github.io/appleinstaller-site/admin.html**
+Admin panel at **https://flickfpz.github.io/rigset/admin.html**
 
 ## License
 

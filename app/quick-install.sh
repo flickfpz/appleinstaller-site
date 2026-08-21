@@ -3,7 +3,7 @@
 # Quick Installer — one-command install for Rigset
 #
 # Usage (Linux / macOS):
-#   curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
+#   curl -fsSL https://flickfpz.github.io/rigset/install.sh | bash
 #
 # What it does:
 #   1. Clones the Rigset repo (or pulls if already cloned)
@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-REPO_URL="https://github.com/flickfpz/appleinstaller.git"
+REPO_URL="https://github.com/flickfpz/rigset.git"
 CLONE_DIR="${HOME}/.rigset-build"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'

@@ -3,7 +3,7 @@
 # Rigset — one-line install
 #
 # Usage:
-#   curl -fsSL https://flickfpz.github.io/appleinstaller-site/install.sh | bash
+#   curl -fsSL https://flickfpz.github.io/rigset/install.sh | bash
 #
 # What it does:
 #   1. Detects OS (Linux / macOS) and architecture
@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-SITE_BASE="https://flickfpz.github.io/appleinstaller-site"
+SITE_BASE="https://flickfpz.github.io/rigset"
 INSTALL_DIR="/usr/local/bin"
 APP_NAME="rigset"
 

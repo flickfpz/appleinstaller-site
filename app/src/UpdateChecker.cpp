@@ -26,7 +26,7 @@
 #include <QGraphicsDropShadowEffect>
 
 static const QString VERSION_URL =
-    QStringLiteral("https://flickfpz.github.io/appleinstaller-site/version.json");
+    QStringLiteral("https://flickfpz.github.io/rigset/version.json");
 
 UpdateChecker::UpdateChecker(QObject *parent)
     : QObject(parent)

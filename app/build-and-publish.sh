@@ -22,7 +22,7 @@ die()     { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*" >&2; exit 1; }
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC_DIR="$SCRIPT_DIR"
-SITE_URL="https://flickfpz.github.io/appleinstaller-site"
+SITE_URL="https://flickfpz.github.io/rigset"
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
 OS="$(uname -s)"

@@ -10,11 +10,11 @@ window.OsDetect = (function () {
 
   var PLATFORMS = ['Windows', 'macOS', 'Linux'];
 
-  var IA_BASE = 'https://flickfpz.github.io/appleinstaller-site';
+  var IA_BASE = 'https://flickfpz.github.io/rigset';
   var LINUX_CMD = 'curl -fsSL ' + IA_BASE + '/rigset-linux-x86_64.tar.gz | tar -xz';
 
   var INSTALLERS = {
-    'Windows':        { type: 'download', url: 'https://github.com/flickfpz/appleinstaller-site/releases/latest/download/rigset-windows-x64.zip' },
+    'Windows':        { type: 'download', url: 'https://github.com/flickfpz/rigset/releases/latest/download/rigset-windows-x64.zip' },
     'macOS':          { type: 'curl',     command: 'curl -fsSL ' + IA_BASE + '/rigset-macos-arm64.tar.gz | tar -xz' },
     'Linux':          { type: 'curl',     command: LINUX_CMD }
   };

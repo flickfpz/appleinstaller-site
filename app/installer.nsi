@@ -24,8 +24,8 @@ BrandingText "Rigset"
 !define APP_NAME      "Rigset"
 !define APP_VERSION   "1.0"
 !define APP_PUBLISHER "Rigset Contributors"
-!define APP_WEB_SITE  "https://flickfpz.github.io/appleinstaller-site"
-!define HELP_LINK     "https://github.com/flickfpz/appleinstaller/issues"
+!define APP_WEB_SITE  "https://flickfpz.github.io/rigset"
+!define HELP_LINK     "https://github.com/flickfpz/rigset/issues"
 
 ; ── Version Info ─────────────────────────────────────────────────────────────
 VIProductVersion "${APP_VERSION}.0.0"

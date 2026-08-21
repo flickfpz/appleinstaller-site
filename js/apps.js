@@ -144,7 +144,7 @@
     {
       id: 'lutris', name: 'Lutris', category: 'Media',
       description: 'Open-source gaming platform for Linux game management',
-      icon: 'si si-linux', platform: 'linux',
+      icon: 'iconoir-gamepad', platform: 'linux',
       commands: {
         linux: 'sudo pacman -S --noconfirm --needed lutris'
       }

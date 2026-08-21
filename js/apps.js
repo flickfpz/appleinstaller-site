@@ -222,6 +222,37 @@
       }
     },
 
+    // ── AI Tools ──────────────────────────────────────────────────────────────
+    {
+      id: 'claude-code', name: 'Claude Code', category: 'AI Tools',
+      description: 'AI pair programmer by Anthropic',
+      icon: 'si si-claude', platform: 'all',
+      commands: {
+        windows: 'winget install Anthropic.ClaudeCode',
+        mac: 'brew install --cask claude-code',
+        linux: 'npm install -g @anthropic-ai/claude-code'
+      }
+    },
+    {
+      id: 'codex', name: 'Codex', category: 'AI Tools',
+      description: 'AI coding agent by OpenAI',
+      icon: 'si si-openai', platform: 'all',
+      commands: {
+        windows: 'winget install OpenAI.Codex',
+        mac: 'brew install --cask codex',
+        linux: 'npm install -g @openai/codex'
+      }
+    },
+    {
+      id: 'opencode', name: 'OpenCode', category: 'AI Tools',
+      description: 'Open-source AI coding assistant',
+      icon: 'iconoir-terminal', platform: 'all',
+      commands: {
+        mac: 'brew install anomalyco/tap/opencode',
+        linux: 'npm install -g opencode-ai'
+      }
+    },
+
     // ── Productivity ──────────────────────────────────────────────────────────
     {
       id: 'libreoffice', name: 'LibreOffice', category: 'Productivity',

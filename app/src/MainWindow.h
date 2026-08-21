@@ -8,18 +8,18 @@
 #include <QMap>
 #include <QVector>
 #include <QWidget>
+#include <QStackedWidget>
 
-#include "Theme.h"       // must come before ThemePicker uses ThemeManager::Theme
+#include "Theme.h"
 #include "OsDetect.h"
 #include "AppData.h"
 #include "AppCard.h"
 #include "CategoryPanel.h"
 #include "ProgressOverlay.h"
+#include "WizardPage.h"
 
-class GradientBackground;  // defined in MainWindow.cpp
+class GradientBackground;
 
-// ── ThemePicker ───────────────────────────────────────────────────────────────
-// Three animated pill-buttons in the header that hot-swap the theme.
 class ThemePicker : public QWidget
 {
     Q_OBJECT
@@ -47,7 +47,6 @@ private:
     void updateActive();
 };
 
-// ── MainWindow ────────────────────────────────────────────────────────────────
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -61,35 +60,25 @@ public slots:
     void applyTheme();
 
 private slots:
-    void onCategorySelected(const QString &category);
-    void onSearchChanged(const QString &text);
-    void onCardSelectionChanged(const QString &id, bool selected);
+    void goToPage(int index);
     void onInstallClicked();
-    void onSelectAll();
-    void onDeselectAll();
     void refreshInstallButton();
 
 private:
-    void buildHeader(QWidget *parent, QVBoxLayout *layout);
-    void buildGrid();
+    void buildPages();
     void applyFilter();
 
-    // data
     QVector<AppData>        m_catalogue;
-    QMap<QString, AppCard*> m_cards;
+    QVector<WizardPage*>    m_pages;
+    QStringList             m_categoryOrder;
     QStringList             m_selectedIds;
-    QString                 m_activeCategory;
-    QString                 m_searchText;
+    int                     m_currentPage = 0;
 
-    // structural UI (no re-theming needed — layout only)
     CategoryPanel      *m_sidebar       = nullptr;
-    QScrollArea        *m_scrollArea    = nullptr;
-    QWidget            *m_gridContainer = nullptr;
-    QGridLayout        *m_grid          = nullptr;
+    QStackedWidget     *m_stack         = nullptr;
     ProgressOverlay    *m_overlay       = nullptr;
     GradientBackground *m_gradientBg    = nullptr;
 
-    // themed UI widgets (applyTheme touches these)
     QWidget     *m_headerWidget  = nullptr;
     QWidget     *m_bottomBar     = nullptr;
     QWidget     *m_centralWidget = nullptr;
@@ -97,9 +86,8 @@ private:
     QLabel      *m_subtitleLabel = nullptr;
     QLineEdit   *m_searchBox     = nullptr;
     QPushButton *m_installBtn    = nullptr;
-    QPushButton *m_selectAllBtn  = nullptr;
-    QPushButton *m_deselectBtn   = nullptr;
     QLabel      *m_countLabel    = nullptr;
+    QLabel      *m_stepLabel     = nullptr;
     ThemePicker *m_themePicker   = nullptr;
-    QLabel      *m_osBadge       = nullptr;   // shows detected OS name
+    QLabel      *m_osBadge       = nullptr;
 };

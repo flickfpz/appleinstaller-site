@@ -156,6 +156,37 @@ inline QVector<AppData> defaultCatalogue()
         "Microsoft.VisualStudioCode","visual-studio-code",
         "visual-studio-code-bin","code","code");
 
+    // AI Coding Tools
+    {
+        AppData a; a.id = "claude-code"; a.name = "Claude Code";
+        a.description = "AI pair programmer by Anthropic"; a.category = "AI Tools"; a.version = "latest";
+        { OsCmd c; c.program = "winget"; c.args = {"install","--silent","--accept-package-agreements","--accept-source-agreements","Anthropic.ClaudeCode"}; c.available = true; a.cmds[OsDetect::OS::Windows] = c; }
+        { OsCmd c; c.program = "brew"; c.args = {"install","--cask","claude-code"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
+        { OsCmd c; c.program = "npm"; c.args = {"install","-g","@anthropic-ai/claude-code"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
+        a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
+        a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        cat << a;
+    }
+    {
+        AppData a; a.id = "codex"; a.name = "Codex";
+        a.description = "AI coding agent by OpenAI"; a.category = "AI Tools"; a.version = "latest";
+        { OsCmd c; c.program = "winget"; c.args = {"install","--silent","--accept-package-agreements","--accept-source-agreements","OpenAI.Codex"}; c.available = true; a.cmds[OsDetect::OS::Windows] = c; }
+        { OsCmd c; c.program = "brew"; c.args = {"install","--cask","codex"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
+        { OsCmd c; c.program = "npm"; c.args = {"install","-g","@openai/codex"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
+        a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
+        a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        cat << a;
+    }
+    {
+        AppData a; a.id = "opencode"; a.name = "OpenCode";
+        a.description = "Open-source AI coding assistant"; a.category = "AI Tools"; a.version = "latest";
+        { OsCmd c; c.program = "brew"; c.args = {"install","anomalyco/tap/opencode"}; c.available = true; a.cmds[OsDetect::OS::macOS] = c; }
+        { OsCmd c; c.program = "npm"; c.args = {"install","-g","opencode-ai"}; c.available = true; a.cmds[OsDetect::OS::Arch] = c; }
+        a.cmds[OsDetect::OS::Debian] = a.cmds[OsDetect::OS::Arch];
+        a.cmds[OsDetect::OS::Fedora] = a.cmds[OsDetect::OS::Arch];
+        cat << a;
+    }
+
     cat << D::makeFormula("git","Git",
         "Distributed version control system","Dev Tools","latest",
         "Git.Git","git",

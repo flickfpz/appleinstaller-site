@@ -17,6 +17,7 @@ set(SOURCES
     src/CategoryPanel.cpp
     src/InstallWorker.cpp
     src/ProgressOverlay.cpp
+    src/WizardPage.cpp
     src/Theme.cpp
     src/UpdateChecker.cpp
 )
@@ -28,6 +29,7 @@ set(HEADERS
     src/CategoryPanel.h
     src/InstallWorker.h
     src/ProgressOverlay.h
+    src/WizardPage.h
     src/Theme.h
     src/OsDetect.h
     src/UpdateChecker.h

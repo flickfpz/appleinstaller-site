@@ -106,7 +106,7 @@
     {
       id: 'handbrake', name: 'HandBrake', category: 'Media',
       description: 'Open-source video transcoder for converting any format',
-      icon: 'iconoir-video-skip-forward', platform: 'all',
+      icon: 'iconoir-media-video', platform: 'all',
       commands: {
         windows: 'winget install --id HandBrake.HandBrake --silent --accept-package-agreements --accept-source-agreements',
         mac: 'brew install --cask handbrake',

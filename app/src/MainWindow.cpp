@@ -92,9 +92,10 @@ ThemePicker::ThemePicker(QWidget *parent) : QWidget(parent)
 
     struct Def { ThemeManager::Theme t; QString lbl; QColor dot; };
     const QVector<Def> defs = {
-        { ThemeManager::Theme::Light,    "Light",    { 255, 210,  60 } },
-        { ThemeManager::Theme::Dark,     "Dark",     {  70, 140, 255 } },
-        { ThemeManager::Theme::Midnight, "Midnight", { 150,  80, 255 } },
+        { ThemeManager::Theme::Light,     "Light",     { 255, 210,  60 } },
+        { ThemeManager::Theme::Dark,      "Dark",      {  70, 140, 255 } },
+        { ThemeManager::Theme::Midnight,  "Midnight",  { 150,  80, 255 } },
+        { ThemeManager::Theme::TrueBlack, "True Black",{   0,   0,   0 } },
     };
 
     for (const Def &d : defs) {
@@ -196,6 +197,14 @@ void ThemePicker::paintEvent(QPaintEvent *)
         p.setPen(Qt::NoPen);
         p.setBrush(col);
         p.drawEllipse(dotX, dotY - dotR, dotR * 2, dotR * 2);
+
+        // White outline for dark dots so they stay visible
+        if (col.lightness() < 40) {
+            p.setBrush(Qt::NoBrush);
+            p.setPen(QPen(QColor(120, 120, 120), 1.0));
+            p.drawEllipse(dotX, dotY - dotR, dotR * 2, dotR * 2);
+            p.setPen(Qt::NoPen);
+        }
 
         if (active) {
             QRadialGradient glow(dotX + dotR, dotY, dotR * 3);

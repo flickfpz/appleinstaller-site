@@ -210,6 +210,55 @@ inline ThemeColors midnight()
     return c;
 }
 
+inline ThemeColors trueBlack()
+{
+    ThemeColors c;
+    c.hasGradientBg = false;
+
+    c.bg                = {   0,   0,   0 };
+    c.surface           = {  18,  18,  18 };
+    c.surfaceAlt        = {  12,  12,  12 };
+    c.surfaceElevated   = {  28,  28,  28 };
+    c.glassBg           = QColor(0, 0, 0, 230);
+    c.glassBorder       = QColor(40, 40, 40, 255);
+    c.border            = {  38,  38,  38 };
+    c.borderSubtle      = {  28,  28,  28 };
+
+    c.accent            = { 138,  80, 255 };
+    c.accentHover       = { 160, 105, 255 };
+    c.accentPressed     = { 115,  60, 235 };
+    c.accentDisabled    = {  38,  38,  38 };
+    c.accentText        = { 255, 255, 255 };
+    c.accentSubtle      = QColor(138, 80, 255, 30);
+
+    c.success           = {  50, 220, 120 };
+    c.successSubtle     = QColor(50, 220, 120, 30);
+    c.danger            = { 255,  80,  90 };
+    c.dangerSubtle      = QColor(255, 80, 90, 30);
+    c.warning           = { 255, 185,  55 };
+
+    c.textPrimary       = { 240, 240, 240 };
+    c.textSecondary     = { 140, 140, 145 };
+    c.textTertiary      = {  80,  80,  85 };
+    c.textDisabled      = {  50,  50,  50 };
+    c.textOnAccent      = { 255, 255, 255 };
+
+    c.inputBg           = {  14,  14,  14 };
+    c.inputBorder       = {  38,  38,  38 };
+    c.inputBorderFocus  = { 138,  80, 255 };
+    c.inputPlaceholder  = {  80,  80,  85 };
+
+    c.scrollHandle      = {  44,  44,  44 };
+    c.scrollHandleHover = {  64,  64,  64 };
+
+    c.dimOverlay        = QColor(0, 0, 0, 220);
+    c.cardSelected      = QColor(138, 80, 255, 25);
+    c.cardBorderSelected= { 138,  80, 255 };
+    c.checkBadge        = { 138,  80, 255 };
+    c.shadowColor       = QColor(0, 0, 0, 180);
+    return c;
+}
+
 } // namespace Palettes
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -220,7 +269,7 @@ class ThemeManager : public QObject
     Q_OBJECT
 
 public:
-    enum class Theme { Light, Dark, Midnight };
+    enum class Theme { Light, Dark, Midnight, TrueBlack };
 
     static ThemeManager &instance()
     {
@@ -236,9 +285,10 @@ public:
         if (m_theme == t) return;
         m_theme = t;
         switch (t) {
-            case Theme::Light:    m_colors = Palettes::light();    break;
-            case Theme::Dark:     m_colors = Palettes::dark();     break;
-            case Theme::Midnight: m_colors = Palettes::midnight(); break;
+            case Theme::Light:     m_colors = Palettes::light();     break;
+            case Theme::Dark:      m_colors = Palettes::dark();      break;
+            case Theme::Midnight:  m_colors = Palettes::midnight();  break;
+            case Theme::TrueBlack: m_colors = Palettes::trueBlack(); break;
         }
         if (qApp)
             qApp->setStyleSheet(globalStyleSheet());

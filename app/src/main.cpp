@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
     // Check for updates — blocking overlay if newer version found
     UpdateChecker *updater = new UpdateChecker(&app);
     QObject::connect(updater, &UpdateChecker::updateRequired,
-                     &window, [&window](const QString &ver, const QString &url) {
-        UpdateChecker::showOverlay(&window, ver, url);
+                     &window, [&window, updater](const QString &ver, const QString &url) {
+        UpdateChecker::showOverlay(&window, ver, url, updater);
     });
     updater->check();
 

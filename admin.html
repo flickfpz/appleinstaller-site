@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https://api.github.com https://flickfpz.github.io; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com;" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Rigset Admin</title>
 
@@ -23,20 +23,42 @@
     <div style="background:#161230;border:1px solid #37375F;border-radius:16px;padding:2.5rem;max-width:380px;width:90%;text-align:center;">
       <div style="font-size:2rem;margin-bottom:0.5rem;">&#x2B21;</div>
       <h2 style="color:#EBE4FF;font-size:1.2rem;margin-bottom:0.25rem;">Rigset Admin</h2>
-      <p style="color:#9B91C8;font-size:0.85rem;margin-bottom:1.5rem;">Enter the admin password to continue</p>
-      <input id="auth-password" type="password" placeholder="Password" style="width:100%;padding:0.65rem 1rem;border-radius:10px;border:1px solid #37375F;background:#100D24;color:#EBE4FF;font-size:0.9rem;margin-bottom:1rem;outline:none;box-sizing:border-box;" />
-      <div id="auth-error" style="color:#FF5060;font-size:0.8rem;margin-bottom:1rem;display:none;">Incorrect password</div>
+      <p style="color:#9B91C8;font-size:0.85rem;margin-bottom:1.5rem;">Enter a GitHub token with repo access to continue</p>
+      <input id="auth-password" type="password" placeholder="ghp_..." style="width:100%;padding:0.65rem 1rem;border-radius:10px;border:1px solid #37375F;background:#100D24;color:#EBE4FF;font-size:0.9rem;margin-bottom:1rem;outline:none;box-sizing:border-box;" />
+      <div id="auth-error" style="color:#FF5060;font-size:0.8rem;margin-bottom:1rem;display:none;">Invalid token or network error</div>
       <button id="auth-submit" style="width:100%;padding:0.7rem;border:none;border-radius:10px;background:#8A50FF;color:#fff;font-size:0.95rem;font-weight:600;cursor:pointer;">Unlock</button>
     </div>
   </div>
   <script>
   (function(){
-    var H='0272f2536c14b6c726e579e9b1fb852d43eced8b08596a34dd92aeca027e0f9a';
     var g=document.getElementById('auth-gate'),i=document.getElementById('auth-password'),
         e=document.getElementById('auth-error'),b=document.getElementById('auth-submit');
-    async function c(){var p=i.value;if(!p)return;
-      var h=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(p)))).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
-      if(h===H){g.style.display='none';}else{e.style.display='';i.value='';i.focus();}}
+
+    var saved= sessionStorage.getItem('gh-pat');
+    if(saved){g.style.display='none'; window.__GH_PAT=saved; return;}
+
+    async function c(){
+      var p=i.value;if(!p)return;
+      b.textContent='Validating...'; b.disabled=true;
+      try{
+        var r=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+p,'Accept':'application/vnd.github+json'}});
+        if(r.ok){
+          var u=await r.json();
+          if(u.login==='flickfpz'){
+            sessionStorage.setItem('gh-pat',p);
+            window.__GH_PAT=p;
+            g.style.display='none';
+          }else{
+            e.textContent='Token belongs to @'+u.login+', not @flickfpz'; e.style.display=''; i.value='';i.focus();
+          }
+        }else{
+          e.textContent='Invalid token (HTTP '+r.status+')'; e.style.display=''; i.value='';i.focus();
+        }
+      }catch(ex){
+        e.textContent='Network error: '+ex.message; e.style.display=''; i.value='';i.focus();
+      }
+      b.textContent='Unlock'; b.disabled=false;
+    }
     b.addEventListener('click',c);i.addEventListener('keydown',function(ev){if(ev.key==='Enter')c();});
   })();
   </script>
@@ -66,6 +88,10 @@
         <div class="sidebar-nav-item" data-section="settings" role="button" tabindex="0">
           <span class="sidebar-nav-icon" aria-hidden="true">&#x2699;&#xFE0F;</span>
           Settings
+        </div>
+        <div class="sidebar-nav-item" data-section="updates" role="button" tabindex="0">
+          <span class="sidebar-nav-icon" aria-hidden="true">&#x1F680;</span>
+          Push Updates
         </div>
       </nav>
 
@@ -197,6 +223,54 @@
             <h3 class="settings-card-title">Danger Zone</h3>
             <p class="settings-card-desc">Clear all admin data from localStorage and reset to defaults.</p>
             <button class="btn btn-danger" id="reset-data-btn">&#x1F5D1;&#xFE0F; Reset All Data</button>
+          </div>
+        </section>
+
+        <!-- ── Updates Section ────────────────────────────────────── -->
+        <section class="admin-section" id="section-updates">
+          <div class="settings-card">
+            <h3 class="settings-card-title">Live Version Status</h3>
+            <p class="settings-card-desc">Current version deployed on GitHub Pages.</p>
+            <div id="live-version-status" style="padding:0.75rem 1rem;border-radius:10px;background:#100D24;border:1px solid #37375F;color:#9B91C8;font-size:0.9rem;">Loading...</div>
+          </div>
+
+          <div class="settings-card">
+            <h3 class="settings-card-title">Push New Version</h3>
+            <p class="settings-card-desc">Update version.json on GitHub and trigger a new release build. Requires a PAT with repo access.</p>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="push-version">New Version</label>
+                <input type="text" class="form-input" id="push-version" placeholder="e.g. 1.1.0" />
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="push-url-windows">Windows Download URL</label>
+                <input type="text" class="form-input" id="push-url-windows" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="push-url-macos">macOS Download URL</label>
+                <input type="text" class="form-input" id="push-url-macos" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="settings-row">
+              <div class="form-group">
+                <label class="form-label" for="push-url-linux">Linux Download URL</label>
+                <input type="text" class="form-input" id="push-url-linux" placeholder="https://..." />
+              </div>
+            </div>
+            <div style="margin-top:1rem;">
+              <button class="btn btn-primary" id="push-update-btn">&#x1F680; Push Update</button>
+            </div>
+            <div id="push-status" style="margin-top:0.75rem;display:none;padding:0.75rem 1rem;border-radius:10px;font-size:0.85rem;"></div>
+          </div>
+
+          <div class="settings-card">
+            <h3 class="settings-card-title">Recent Releases</h3>
+            <p class="settings-card-desc">Latest releases from GitHub.</p>
+            <div id="releases-list" style="padding:0.75rem 1rem;border-radius:10px;background:#100D24;border:1px solid #37375F;color:#9B91C8;font-size:0.9rem;">Loading...</div>
           </div>
         </section>
 
@@ -456,7 +530,7 @@
         el.classList.toggle('active', el.id === 'section-' + name);
       });
 
-      var titles = { apps: 'Apps', themes: 'Themes', settings: 'Settings' };
+      var titles = { apps: 'Apps', themes: 'Themes', settings: 'Settings', updates: 'Push Updates' };
       headerTitle.textContent = titles[name] || name;
 
       if (name === 'apps') {
@@ -467,6 +541,11 @@
         headerActions.innerHTML = '<button class="btn btn-primary" id="add-theme-btn">+ Add Theme</button>';
         document.getElementById('add-theme-btn').addEventListener('click', function () { openThemeModal(); });
         headerCount.textContent = (3 + customThemes.length) + ' themes';
+      } else if (name === 'updates') {
+        headerActions.innerHTML = '';
+        headerCount.textContent = '';
+        loadLiveVersion();
+        loadReleases();
       } else {
         headerActions.innerHTML = '';
         headerCount.textContent = '';
@@ -917,6 +996,131 @@
         loadSettingsForm();
         toast('All data reset');
       };
+    });
+
+    /* ── Updates (Push to GitHub) ───────────────────────────────── */
+
+    var REPO_OWNER = 'flickfpz';
+    var REPO_NAME  = 'appleinstaller-site';
+    var REPO_API   = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME;
+
+    function ghHeaders() {
+      var pat = window.__GH_PAT || sessionStorage.getItem('gh-pat');
+      return { 'Authorization': 'token ' + pat, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    }
+
+    function loadLiveVersion() {
+      var el = document.getElementById('live-version-status');
+      fetch(REPO_API + '/contents/version.json', { headers: ghHeaders() })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var content = JSON.parse(atob(data.content));
+          el.style.color = '#EBE4FF';
+          el.innerHTML = '<strong>Version:</strong> ' + escapeHtml(content.version) +
+            '<br><strong>Windows:</strong> <span style="font-size:0.8rem;word-break:break-all;">' + escapeHtml((content.download||{}).windows||'—') + '</span>' +
+            '<br><strong>macOS:</strong> <span style="font-size:0.8rem;word-break:break-all;">' + escapeHtml((content.download||{}).macos||'—') + '</span>' +
+            '<br><strong>Linux:</strong> <span style="font-size:0.8rem;word-break:break-all;">' + escapeHtml((content.download||{}).linux||'—') + '</span>';
+          document.getElementById('push-version').value = content.version || '';
+          document.getElementById('push-url-windows').value = (content.download||{}).windows || '';
+          document.getElementById('push-url-macos').value = (content.download||{}).macos || '';
+          document.getElementById('push-url-linux').value = (content.download||{}).linux || '';
+        })
+        .catch(function(err) { el.style.color = '#FF5060'; el.textContent = 'Failed to load: ' + err.message; });
+    }
+
+    function loadReleases() {
+      var el = document.getElementById('releases-list');
+      fetch(REPO_API + '/releases?per_page=5', { headers: ghHeaders() })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(releases) {
+          if (!releases.length) { el.textContent = 'No releases found.'; return; }
+          var html = '';
+          releases.forEach(function(rel) {
+            var date = new Date(rel.published_at).toLocaleDateString();
+            html += '<div style="padding:0.5rem 0;border-bottom:1px solid #37375F;">' +
+              '<strong style="color:#EBE4FF;">' + escapeHtml(rel.tag_name) + '</strong> ' +
+              '<span style="color:#6E6E73;font-size:0.8rem;">' + date + '</span>' +
+              (rel.prerelease ? ' <span style="color:#FF5060;font-size:0.75rem;">pre-release</span>' : '') +
+              '</div>';
+          });
+          el.innerHTML = html;
+        })
+        .catch(function(err) { el.style.color = '#FF5060'; el.textContent = 'Failed to load: ' + err.message; });
+    }
+
+    document.getElementById('push-update-btn').addEventListener('click', function () {
+      var statusEl = document.getElementById('push-status');
+      var newVersion = document.getElementById('push-version').value.trim();
+      var urlWin = document.getElementById('push-url-windows').value.trim();
+      var urlMac = document.getElementById('push-url-macos').value.trim();
+      var urlLinux = document.getElementById('push-url-linux').value.trim();
+
+      if (!newVersion) { toast('Version is required', 'error'); return; }
+      if (!window.__GH_PAT && !sessionStorage.getItem('gh-pat')) {
+        toast('Please authenticate first', 'error'); return;
+      }
+
+      statusEl.style.display = '';
+      statusEl.style.background = '#100D24';
+      statusEl.style.border = '1px solid #37375F';
+      statusEl.style.color = '#EBE4FF';
+      statusEl.textContent = 'Fetching current version.json...';
+
+      fetch(REPO_API + '/contents/version.json', { headers: ghHeaders() })
+        .then(function(r) { if (!r.ok) throw new Error('Failed to fetch version.json: HTTP ' + r.status); return r.json(); })
+        .then(function(fileData) {
+          var sha = fileData.sha;
+          var newContent = {
+            version: newVersion,
+            name: 'Rigset',
+            download: {
+              windows: urlWin,
+              macos: urlMac,
+              linux: urlLinux
+            }
+          };
+
+          statusEl.textContent = 'Committing version.json...';
+          return fetch(REPO_API + '/contents/version.json', {
+            method: 'PUT',
+            headers: ghHeaders(),
+            body: JSON.stringify({
+              message: 'chore: update version to ' + newVersion,
+              content: btoa(JSON.stringify(newContent, null, 2) + '\n'),
+              sha: sha,
+              branch: 'main'
+            })
+          }).then(function(r) { if (!r.ok) throw new Error('Commit failed: HTTP ' + r.status); return r.json(); })
+            .then(function() { return sha; });
+        })
+        .then(function() {
+          statusEl.textContent = 'Creating tag v' + newVersion + '...';
+          return fetch(REPO_API + '/git/refs', {
+            method: 'POST',
+            headers: ghHeaders(),
+            body: JSON.stringify({ ref: 'refs/tags/v' + newVersion, sha: 'HEAD' })
+          }).then(function(r) {
+            if (r.status === 422) { statusEl.textContent = 'Tag v' + newVersion + ' already exists. Bump version.'; throw new Error('tag exists'); }
+            if (!r.ok) throw new Error('Tag creation failed: HTTP ' + r.status);
+            return r.json();
+          });
+        })
+        .then(function() {
+          statusEl.style.background = '#0A2A10';
+          statusEl.style.borderColor = '#37D85F';
+          statusEl.style.color = '#37D85F';
+          statusEl.innerHTML = '&#x2714; Tag v' + escapeHtml(newVersion) + ' created! ' +
+            '<a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions" target="_blank" style="color:#8A50FF;">View Actions &#x2197;</a>';
+          toast('Update pushed! Workflow triggered.');
+          loadReleases();
+        })
+        .catch(function(err) {
+          if (err.message === 'tag exists') return;
+          statusEl.style.background = '#2A0A0A';
+          statusEl.style.borderColor = '#FF5060';
+          statusEl.style.color = '#FF5060';
+          statusEl.textContent = 'Error: ' + err.message;
+        });
     });
 
     /* ── Keyboard shortcuts ──────────────────────────────────────── */
